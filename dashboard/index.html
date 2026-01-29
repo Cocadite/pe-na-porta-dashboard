@@ -1,1 +1,779 @@
-<h1>DASHBOARD OK</h1>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel ADM — É Os Pé Na Porta</title>
+
+  <style>
+    :root{
+      --bg:#06060b;
+      --panel:#0d0d15;
+      --panel2:#10101b;
+      --line:rgba(255,255,255,.10);
+      --line2:rgba(255,255,255,.08);
+
+      --text:#f3f3ff;
+      --muted:#b8b8d6;
+
+      --red:#ff2b2b;
+      --red2:#b30000;
+      --ok:#25d366;
+      --warn:#ffb020;
+
+      --shadow:0 18px 60px rgba(0,0,0,.60);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1100px 600px at 15% -10%, rgba(255,43,43,.16), transparent 55%),
+        radial-gradient(900px 600px at 90% 0%, rgba(255,43,43,.08), transparent 60%),
+        radial-gradient(800px 500px at 30% 110%, rgba(255,255,255,.04), transparent 60%),
+        linear-gradient(180deg, #06060b, #050509 55%, #06060a);
+      color:var(--text);
+      padding:18px;
+      overflow-x:hidden;
+    }
+
+    /* Animated background sparkles */
+    .fx{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.35;
+      filter: blur(0px);
+      background:
+        radial-gradient(700px 400px at 10% 20%, rgba(255,43,43,.16), transparent 60%),
+        radial-gradient(800px 520px at 90% 30%, rgba(255,43,43,.10), transparent 60%),
+        radial-gradient(900px 600px at 50% 120%, rgba(255,255,255,.04), transparent 60%);
+      animation: floaty 10s ease-in-out infinite alternate;
+    }
+    @keyframes floaty{
+      from{transform:translateY(0px)}
+      to{transform:translateY(-16px)}
+    }
+
+    .wrap{max-width:1200px;margin:0 auto; position:relative; z-index:2}
+
+    /* Topbar */
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      margin-bottom:14px;
+      animation: enter .28s ease-out both;
+    }
+    @keyframes enter{
+      from{transform:translateY(10px);opacity:0}
+      to{transform:none;opacity:1}
+    }
+
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+      background: linear-gradient(135deg, rgba(255,43,43,.22), rgba(255,43,43,.06));
+      border:1px solid rgba(255,43,43,.25);
+      box-shadow: var(--shadow);
+      font-size:22px;
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-60%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+      transform: rotate(25deg);
+      animation: shine 2.8s ease-in-out infinite;
+      opacity:.55;
+    }
+    @keyframes shine{
+      0%{transform:translateX(-40%) rotate(25deg)}
+      60%{transform:translateX(40%) rotate(25deg)}
+      100%{transform:translateX(40%) rotate(25deg)}
+    }
+
+    .brand h1{font-size:18px;margin:0;letter-spacing:.2px}
+    .brand .sub{margin-top:3px;color:var(--muted);font-size:12px}
+
+    .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .chip{
+      display:inline-flex;align-items:center;gap:10px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line2);
+      padding:10px 12px;border-radius:999px;
+      color:var(--muted);font-size:13px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .chip b{color:var(--text)}
+    .btn{
+      border:none;border-radius:14px;padding:10px 12px;
+      font-weight:900;cursor:pointer;
+      background:rgba(255,43,43,.18);
+      border:1px solid rgba(255,43,43,.30);
+      color:var(--text);
+      transition: transform .10s ease, filter .15s ease, background .15s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    .btn:hover{filter:brightness(1.10); background:rgba(255,43,43,.24)}
+    .btn:active{transform:translateY(1px) scale(.99)}
+    .btn.secondary{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line2);
+    }
+    .btn.ok{
+      background:rgba(37,211,102,.14);
+      border:1px solid rgba(37,211,102,.26);
+    }
+
+    /* Cards */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      animation: enter .28s ease-out .04s both;
+    }
+    @media(min-width: 980px){
+      .grid{grid-template-columns: 1fr 1fr 1fr 1fr}
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+    }
+    .card.pad{padding:14px}
+    .statTitle{color:var(--muted);font-size:12px;margin:0 0 6px 0}
+    .statValue{font-size:22px;font-weight:1000;margin:0}
+    .statHint{color:var(--muted);font-size:12px;margin-top:8px}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:99px;margin-right:8px;vertical-align:middle}
+    .dot.red{background:var(--red)}
+    .dot.ok{background:var(--ok)}
+    .dot.warn{background:var(--warn)}
+
+    /* Main panel */
+    .panel{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      animation: enter .28s ease-out .08s both;
+    }
+    @media(min-width: 980px){
+      .panel{grid-template-columns: 1.2fr .8fr}
+    }
+
+    .panelHeader{
+      display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+      padding:14px 14px 10px 14px;
+      border-bottom:1px solid var(--line2);
+    }
+    .panelHeader h2{margin:0;font-size:14px;letter-spacing:.2px}
+    .panelHeader p{margin:4px 0 0;color:var(--muted);font-size:12px}
+
+    .filters{
+      display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+    }
+    .input,.select{
+      background:rgba(0,0,0,.24);
+      border:1px solid var(--line2);
+      color:var(--text);
+      padding:10px 12px;border-radius:14px;
+      outline:none;
+      transition: border-color .15s ease, transform .10s ease;
+    }
+    .input:focus,.select:focus{
+      border-color: rgba(255,43,43,.35);
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 4px rgba(255,43,43,.08);
+    }
+    .input{min-width:220px}
+
+    /* Table */
+    .tableWrap{padding:10px 14px 14px 14px}
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    th{text-align:left;font-size:12px;color:var(--muted);font-weight:800;padding:0 10px 6px 10px}
+    td{
+      padding:12px 10px;
+      background:rgba(0,0,0,.22);
+      border-top:1px solid var(--line2);
+      border-bottom:1px solid var(--line2);
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    tr:hover td{
+      background:rgba(0,0,0,.28);
+      border-color: rgba(255,43,43,.20);
+      transform: translateY(-1px);
+    }
+    tr td:first-child{
+      border-left:1px solid var(--line2);
+      border-top-left-radius:14px;
+      border-bottom-left-radius:14px;
+    }
+    tr td:last-child{
+      border-right:1px solid var(--line2);
+      border-top-right-radius:14px;
+      border-bottom-right-radius:14px;
+    }
+
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid var(--line2);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .tag.pending{border-color:rgba(255,176,32,.30); color:#ffd9a0}
+    .tag.approved{border-color:rgba(37,211,102,.28); color:#b9f0cf}
+    .tag.rejected{border-color:rgba(255,43,43,.30); color:#ffb1b1}
+
+    .rowBtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+    .mini{
+      padding:9px 10px;border-radius:12px;font-weight:900;
+      border:1px solid var(--line2);
+      background:rgba(255,255,255,.04);
+      cursor:pointer;
+      transition: transform .10s ease, filter .15s ease;
+    }
+    .mini:hover{filter:brightness(1.10); transform: translateY(-1px)}
+    .mini:active{transform: translateY(0px) scale(.99)}
+    .mini.ok{border-color:rgba(37,211,102,.26);background:rgba(37,211,102,.12)}
+    .mini.danger{border-color:rgba(255,43,43,.30);background:rgba(255,43,43,.14)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+
+    /* Side panel */
+    .sideBody{padding:12px 14px 14px 14px}
+    .box{
+      background:rgba(0,0,0,.22);
+      border:1px solid var(--line2);
+      border-radius:16px;
+      padding:12px;
+      margin-top:10px;
+    }
+    .box h3{margin:0 0 6px 0;font-size:13px}
+    .box p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+
+    .kvs{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    .kv{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .kv span{color:var(--muted);font-size:12px}
+    .kv b{font-size:12px}
+
+    .empty{
+      padding:14px;
+      color:var(--muted);
+      font-size:13px;
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;right:16px;bottom:16px;
+      display:flex;flex-direction:column;gap:10px;
+      z-index:9999;
+    }
+    .toastItem{
+      min-width:260px;max-width:360px;
+      background:rgba(10,10,16,.92);
+      border:1px solid var(--line2);
+      box-shadow: var(--shadow);
+      border-radius:16px;
+      padding:12px 12px;
+      color:var(--text);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: pop .16s ease-out;
+    }
+    @keyframes pop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+    .toastItem small{display:block;color:var(--muted);margin-top:4px}
+
+    /* Modal */
+    .modalBg{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.62);
+      display:none;
+      align-items:center;justify-content:center;
+      z-index:9998;
+      padding:18px;
+      animation: fade .15s ease-out;
+    }
+    @keyframes fade{from{opacity:0}to{opacity:1}}
+    .modal{
+      width:min(820px, 100%);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      animation: enter .18s ease-out;
+    }
+    .modalHeader{
+      padding:14px 14px;
+      border-bottom:1px solid var(--line2);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .modalHeader h3{margin:0;font-size:14px}
+    .modalBody{padding:14px}
+    .modalBody pre{
+      margin:0;
+      white-space:pre-wrap;
+      background:rgba(0,0,0,.26);
+      border:1px solid var(--line2);
+      border-radius:14px;
+      padding:12px;
+      color:#d9d9ff;
+    }
+    .closeX{
+      background:transparent;border:1px solid var(--line2);
+      color:var(--text);
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:900;
+      transition: transform .10s ease, filter .15s ease;
+    }
+    .closeX:hover{filter:brightness(1.10); transform: translateY(-1px)}
+    .closeX:active{transform: translateY(0px)}
+
+    .footer{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:12px;
+      opacity:.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="fx"></div>
+
+  <div class="wrap">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">🦶</div>
+        <div>
+          <h1>Painel ADM — É Os Pé Na Porta</h1>
+          <div class="sub">Aprovação via web • animações premium • log + cargo automático</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="chip">Status: <b id="statusTxt">conectando...</b></div>
+        <button class="btn secondary" id="btnTest">Testar API</button>
+        <button class="btn" id="btnRefresh">Atualizar</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid">
+      <div class="card pad">
+        <p class="statTitle"><span class="dot warn"></span>Pendentes</p>
+        <p class="statValue" id="statPending">—</p>
+        <div class="statHint">Aguardando decisão do staff</div>
+      </div>
+      <div class="card pad">
+        <p class="statTitle"><span class="dot ok"></span>Aprovados (24h)</p>
+        <p class="statValue" id="statApproved">—</p>
+        <div class="statHint">Aprovações recentes</div>
+      </div>
+      <div class="card pad">
+        <p class="statTitle"><span class="dot red"></span>Recusados (24h)</p>
+        <p class="statValue" id="statRejected">—</p>
+        <div class="statHint">Recusas recentes</div>
+      </div>
+      <div class="card pad">
+        <p class="statTitle"><span class="dot red"></span>Servidor</p>
+        <p class="statValue mono" id="statGuild">—</p>
+        <div class="statHint">ID do servidor / config</div>
+      </div>
+    </div>
+
+    <!-- MAIN PANEL -->
+    <div class="panel">
+
+      <!-- LEFT: SUBMISSIONS -->
+      <div class="card">
+        <div class="panelHeader">
+          <div>
+            <h2>📥 Formulários</h2>
+            <p>Veja, filtre e aprove/recuse.</p>
+          </div>
+
+          <div class="filters">
+            <input class="input" id="q" placeholder="Pesquisar (nick, discord, token...)" />
+            <select class="select" id="status">
+              <option value="all">Todos</option>
+              <option value="pending" selected>Pendentes</option>
+              <option value="approved">Aprovados</option>
+              <option value="rejected">Recusados</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Nick</th>
+                <th>Idade</th>
+                <th>Status</th>
+                <th>Quando</th>
+                <th style="text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+
+          <div id="empty" class="empty" style="display:none">
+            Nada aqui ainda. Se tiver pendente, aparece aqui.
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: INFO -->
+      <div class="card">
+        <div class="panelHeader">
+          <div>
+            <h2>⚙️ Configuração</h2>
+            <p>Info rápida do sistema / API.</p>
+          </div>
+        </div>
+
+        <div class="sideBody">
+          <div class="box">
+            <h3>🔌 Conexão</h3>
+            <p>Esta dashboard chama a API para listar e aprovar.</p>
+
+            <div class="kvs">
+              <div class="kv"><span>API Base</span><b class="mono" id="kvApi">—</b></div>
+              <div class="kv"><span>Chave API</span><b class="mono" id="kvKey">—</b></div>
+              <div class="kv"><span>Modo</span><b id="kvMode">produção</b></div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn secondary" id="btnOpenDocs">Como configurar</button>
+              <button class="btn ok" id="btnLoadAll">Ver todos</button>
+            </div>
+          </div>
+
+          <div class="box">
+            <h3>🧠 Dicas</h3>
+            <p>
+              • Se “conectando…” não sair, o <b>API_BASE</b> está errado.<br/>
+              • Se der 401, <b>API_KEY</b> está errada.<br/>
+              • Ao aprovar, o bot dá cargo e manda log.
+            </p>
+          </div>
+
+          <div class="footer">
+            Painel É Os Pé Na Porta • animado • vermelho/preto
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- MODAL -->
+  <div class="modalBg" id="modalBg" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHeader">
+        <h3 id="modalTitle">Detalhes</h3>
+        <button class="closeX" id="modalClose">Fechar</button>
+      </div>
+      <div class="modalBody">
+        <pre id="modalPre"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ CONFIG
+    // Ajuste para a sua API REAL:
+    const API_BASE = "https://api-pe-na-porta.vercel.app";
+    const API_KEY  = "1451214957755764749";
+
+    // Mostra no painel
+    document.getElementById("kvApi").textContent = API_BASE;
+    document.getElementById("kvKey").textContent = API_KEY ? (API_KEY.slice(0,4) + "..." + API_KEY.slice(-4)) : "—";
+
+    const $ = (id) => document.getElementById(id);
+
+    function toast(msg, kind="info"){
+      const el = document.createElement("div");
+      el.className = "toastItem";
+      el.innerHTML = `<b>${kind === "ok" ? "✅" : kind === "err" ? "❌" : "ℹ️"} ${escapeHtml(msg)}</b><small>${new Date().toLocaleString()}</small>`;
+      $("toast").appendChild(el);
+      setTimeout(()=> el.remove(), 3800);
+    }
+
+    function setStatus(txt, ok=null){
+      $("statusTxt").textContent = txt;
+      $("statusTxt").style.color = ok === true ? "#b9f0cf" : ok === false ? "#ffb1b1" : "";
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+    }
+
+    function openModal(title, obj){
+      $("modalTitle").textContent = title;
+      $("modalPre").textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+      $("modalBg").style.display = "flex";
+    }
+    function closeModal(){ $("modalBg").style.display = "none"; }
+
+    $("modalClose").addEventListener("click", closeModal);
+    $("modalBg").addEventListener("click", (e)=>{ if(e.target === $("modalBg")) closeModal(); });
+
+    async function api(path, opts={}){
+      const url = API_BASE.replace(/\/$/,"") + path;
+      const headers = Object.assign({
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + API_KEY
+      }, opts.headers || {});
+      const res = await fetch(url, Object.assign({}, opts, { headers }));
+      let data = null;
+      try { data = await res.json(); } catch(e){}
+      if(!res.ok){
+        const msg = (data && (data.error || data.message)) ? (data.error || data.message) : ("HTTP " + res.status);
+        throw new Error(msg);
+      }
+      return data;
+    }
+
+    function fmtTime(ts){
+      if(!ts) return "—";
+      const d = new Date(ts);
+      const diff = Date.now() - d.getTime();
+      const mins = Math.floor(diff/60000);
+      if(mins < 1) return "agora";
+      if(mins < 60) return mins + " min";
+      const hrs = Math.floor(mins/60);
+      if(hrs < 24) return hrs + " h";
+      const days = Math.floor(hrs/24);
+      return days + " d";
+    }
+
+    function tagHtml(status){
+      if(status === "approved") return `<span class="tag approved">✅ aprovado</span>`;
+      if(status === "rejected") return `<span class="tag rejected">❌ recusado</span>`;
+      return `<span class="tag pending">⏳ pendente</span>`;
+    }
+
+    let cache = [];
+    let forceAll = false;
+
+    function applyFilter(){
+      const q = $("q").value.trim().toLowerCase();
+      const st = $("status").value;
+
+      const rows = cache.filter(x=>{
+        const okStatus = (st === "all") ? true : (x.status === st);
+        if(!okStatus) return false;
+        if(!q) return true;
+
+        const hay = [
+          x.discordTag, x.userId, x.nick, x.token, x.linkBonde
+        ].filter(Boolean).join(" ").toLowerCase();
+
+        return hay.includes(q);
+      });
+
+      render(rows);
+    }
+
+    function render(rows){
+      const tb = $("tbody");
+      tb.innerHTML = "";
+
+      $("empty").style.display = rows.length ? "none" : "block";
+
+      for(const item of rows){
+        const tr = document.createElement("tr");
+
+        const user = escapeHtml(item.discordTag || ("ID:" + (item.userId||"—")));
+        const nick = escapeHtml(item.nick || "—");
+        const idade = item.idade != null ? escapeHtml(item.idade) : "—";
+        const when = fmtTime(item.createdAt || item.updatedAt);
+
+        const actions = `
+          <div class="rowBtns">
+            <button class="mini" data-act="view" data-id="${escapeHtml(item.id)}">Detalhes</button>
+            ${item.status === "pending" ? `
+              <button class="mini ok" data-act="approve" data-id="${escapeHtml(item.id)}">Aprovar</button>
+              <button class="mini danger" data-act="reject" data-id="${escapeHtml(item.id)}">Recusar</button>
+            ` : `
+              <button class="mini" data-act="setPending" data-id="${escapeHtml(item.id)}">Voltar p/ pendente</button>
+            `}
+          </div>
+        `;
+
+        tr.innerHTML = `
+          <td><b>${user}</b><div class="mono" style="color:var(--muted);font-size:11px;margin-top:4px">${escapeHtml(item.userId || "")}</div></td>
+          <td>${nick}</td>
+          <td>${idade}</td>
+          <td>${tagHtml(item.status || "pending")}</td>
+          <td>${escapeHtml(when)}</td>
+          <td style="text-align:right">${actions}</td>
+        `;
+
+        tb.appendChild(tr);
+      }
+    }
+
+    async function load(){
+      try{
+        setStatus("carregando...", null);
+
+        // ✅ Ajuste os endpoints abaixo para bater com sua API REAL:
+        // GET  /admin/submissions?status=pending|approved|rejected|all
+        const st = forceAll ? "all" : $("status").value;
+        const data = await api(`/admin/submissions?status=${encodeURIComponent(st)}`);
+
+        cache = Array.isArray(data.items) ? data.items : (Array.isArray(data) ? data : []);
+        setStatus("online", true);
+
+        $("statPending").textContent  = data.stats?.pending ?? "—";
+        $("statApproved").textContent = data.stats?.approved24h ?? "—";
+        $("statRejected").textContent = data.stats?.rejected24h ?? "—";
+        $("statGuild").textContent = (data.meta?.guildId ?? "—");
+
+        applyFilter();
+
+      }catch(e){
+        setStatus("offline", false);
+        toast(String(e.message || e), "err");
+        $("statPending").textContent = "—";
+        $("statApproved").textContent = "—";
+        $("statRejected").textContent = "—";
+        $("statGuild").textContent = "—";
+        cache = [];
+        render([]);
+      }finally{
+        forceAll = false;
+      }
+    }
+
+    async function approve(id){
+      const reason = prompt("Motivo da aprovação (opcional):") || "";
+      try{
+        toast("Aprovando...", "info");
+        await api(`/admin/submissions/${encodeURIComponent(id)}/approve`, {
+          method:"POST",
+          body: JSON.stringify({ reason })
+        });
+        toast("Aprovado!", "ok");
+        await load();
+      }catch(e){
+        toast(e.message || e, "err");
+      }
+    }
+
+    async function reject(id){
+      const reason = prompt("Motivo da recusa (recomendado):") || "";
+      if(!reason.trim()){
+        toast("Recusa cancelada (sem motivo).", "info");
+        return;
+      }
+      try{
+        toast("Recusando...", "info");
+        await api(`/admin/submissions/${encodeURIComponent(id)}/reject`, {
+          method:"POST",
+          body: JSON.stringify({ reason })
+        });
+        toast("Recusado!", "ok");
+        await load();
+      }catch(e){
+        toast(e.message || e, "err");
+      }
+    }
+
+    async function setPending(id){
+      try{
+        toast("Voltando p/ pendente...", "info");
+        await api(`/admin/submissions/${encodeURIComponent(id)}/pending`, { method:"POST" });
+        toast("Ok!", "ok");
+        await load();
+      }catch(e){
+        toast(e.message || e, "err");
+      }
+    }
+
+    function findById(id){
+      return cache.find(x => String(x.id) === String(id)) || null;
+    }
+
+    $("btnRefresh").addEventListener("click", load);
+    $("btnLoadAll").addEventListener("click", ()=>{ forceAll = true; load(); });
+
+    $("btnTest").addEventListener("click", async ()=>{
+      try{
+        const data = await api(`/admin/health`);
+        toast("API OK: " + (data.status || "ok"), "ok");
+      }catch(e){
+        toast("Falha: " + (e.message || e), "err");
+      }
+    });
+
+    $("btnOpenDocs").addEventListener("click", ()=>{
+      openModal("Como configurar (rápido)", `
+1) Ajuste a API em:
+   const API_BASE = "https://...."
+   const API_KEY  = "...."
+
+2) Sua API precisa ter:
+   GET  /admin/health
+   GET  /admin/submissions?status=pending|approved|rejected|all
+   POST /admin/submissions/:id/approve   { reason? }
+   POST /admin/submissions/:id/reject    { reason }
+   POST /admin/submissions/:id/pending
+      `.trim());
+    });
+
+    $("q").addEventListener("input", applyFilter);
+    $("status").addEventListener("change", load);
+
+    $("tbody").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const act = btn.getAttribute("data-act");
+      const id = btn.getAttribute("data-id");
+      if(!act || !id) return;
+
+      if(act === "view"){
+        const item = findById(id);
+        if(!item){ toast("Item não encontrado no cache.", "err"); return; }
+        openModal("Detalhes do formulário", item);
+        return;
+      }
+      if(act === "approve") return approve(id);
+      if(act === "reject") return reject(id);
+      if(act === "setPending") return setPending(id);
+    });
+
+    (function(){
+      if(!API_BASE.includes("http")){
+        setStatus("configurar API_BASE", false);
+        toast("Edite o arquivo e coloque API_BASE e API_KEY.", "err");
+      }else{
+        load();
+      }
+    })();
+  </script>
+</body>
+      </html>
