@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Painel É Os Pé Na Porta — Admin</title>
+  <style>
+    :root{--bg:#0b0b10;--card:#11111a;--card2:#0f0f16;--line:#2a2a39;--text:#f4f4ff;--muted:#b4b4cf;--red:#ff1a1a;--shadow:0 18px 60px rgba(0,0,0,.55);--r:18px}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(900px 600px at 15% -10%, rgba(255,0,0,.14), transparent 55%),radial-gradient(900px 600px at 90% 0%, rgba(255,0,0,.09), transparent 60%),var(--bg);color:var(--text);padding:22px}
+    .wrap{max-width:1100px;margin:0 auto}
+    .top{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg, rgba(255,26,26,.26), rgba(255,26,26,.08));border:1px solid rgba(255,26,26,.28);box-shadow:var(--shadow);font-size:22px}
+    h1{font-size:20px;margin:0}
+    .sub{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .pill{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px 12px;border-radius:999px;color:var(--muted);font-size:13px}
+    .pill input{background:transparent;border:none;color:var(--text);outline:none;min-width:260px}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:980px){.grid{grid-template-columns:1.6fr .8fr}}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+    .card h2{margin:0;font-size:15px}
+    .card .hd{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card .bd{padding:14px}
+    .btn{border:none;border-radius:14px;padding:10px 12px;font-weight:900;cursor:pointer;background:var(--red);color:#111;letter-spacing:.2px}
+    .btn2{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--text)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top;font-size:13px}
+    .table th{color:var(--muted);font-weight:800;text-align:left}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);color:var(--muted);font-size:12px}
+    .ok{border-color:rgba(124,252,144,.35);color:#bfffd0}
+    .no{border-color:rgba(255,77,77,.35);color:#ffd0d0}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .toast{margin-top:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--muted);display:none}
+    .toast.show{display:block}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">🦶</div>
+        <div>
+          <h1>Painel É Os Pé Na Porta</h1>
+          <div class="sub">Aprovação manual dos formulários (tema vermelho/preto).</div>
+        </div>
+      </div>
+      <div class="pill">
+        API Key:
+        <input id="key" placeholder="cole sua ADMIN_API_KEY aqui" />
+        <button class="btn btn2" onclick="saveKey()">Salvar</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="hd">
+          <h2>📥 Pendentes</h2>
+          <div class="row">
+            <button class="btn btn2" onclick="load()">Atualizar</button>
+          </div>
+        </div>
+        <div class="bd">
+          <table class="table" id="tbl">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Usuário</th>
+                <th>Nick / Idade</th>
+                <th>Motivo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="toast" class="toast"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h2>ℹ️ Como usar</h2></div>
+        <div class="bd">
+          <div class="badge">1</div> Cole sua <span class="mono">ADMIN_API_KEY</span> e clique <b>Salvar</b>.<br/><br/>
+          <div class="badge">2</div> Clique em <b>Atualizar</b> para carregar pendentes.<br/><br/>
+          <div class="badge">3</div> Clique <b>Aprovar</b> ou <b>Recusar</b> (o bot dá o cargo no Discord).<br/><br/>
+          <div class="muted small">Dica: o bot também posta log no canal do staff com link direto para este painel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API = "/api/app";
+
+  function toast(msg){
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 3500);
+  }
+
+  function saveKey(){
+    localStorage.setItem("ADMIN_API_KEY", document.getElementById("key").value.trim());
+    toast("✅ Salvo!");
+  }
+
+  function getKey(){
+    return localStorage.getItem("ADMIN_API_KEY") || "";
+  }
+
+  async function call(payload){
+    const key = getKey();
+    if (!key) throw new Error("Cole a ADMIN_API_KEY no topo e salve.");
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "Authorization":"Bearer " + key },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(()=> ({}));
+    if(!res.ok) throw new Error(data.error || ("HTTP "+res.status));
+    return data;
+  }
+
+  function rowStatus(s){
+    if (s === "approved") return `<span class="badge ok">✅ aprovado</span>`;
+    if (s === "rejected") return `<span class="badge no">❌ recusado</span>`;
+    return `<span class="badge">⏳ pendente</span>`;
+  }
+
+  async function load(){
+    try{
+      const data = await call({ action:"list", status:"pending" });
+      const tbody = document.querySelector("#tbl tbody");
+      tbody.innerHTML = "";
+      for(const it of data.items){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${rowStatus(it.status)}</td>
+          <td><b>${it.discordTag || "?"}</b><div class="muted small mono">ID: ${it.userId}</div></td>
+          <td><b>${it.nick || "-"}</b><div class="muted small">Idade: ${it.idade ?? "-"}</div></td>
+          <td class="muted">${(it.motivo||"-").slice(0,220)}</td>
+          <td>
+            <div class="row">
+              <button class="btn" onclick="approve(${it.id})">Aprovar</button>
+              <button class="btn btn2" onclick="reject(${it.id})">Recusar</button>
+            </div>
+            <div class="muted small mono">#${it.id}</div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      if(!data.items.length){
+        const tr=document.createElement("tr");
+        tr.innerHTML=`<td colspan="5" class="muted">Sem pendências 🎉</td>`;
+        tbody.appendChild(tr);
+      }
+    }catch(e){
+      toast("❌ " + e.message);
+    }
+  }
+
+  async function approve(id){
+    try{
+      await call({ action:"decide", id, decision:"approved" });
+      toast("✅ Aprovado!");
+      load();
+    }catch(e){ toast("❌ " + e.message); }
+  }
+
+  async function reject(id){
+    try{
+      await call({ action:"decide", id, decision:"rejected" });
+      toast("✅ Recusado!");
+      load();
+    }catch(e){ toast("❌ " + e.message); }
+  }
+
+  // init
+  document.getElementById("key").value = getKey();
+  load();
+</script>
+</body>
+</html>
