@@ -3,308 +3,446 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard — Pé Na Porta</title>
-  <meta name="theme-color" content="#0b0b0f" />
+  <title>Painel ADM — PNP</title>
   <style>
     :root{
-      --bg:#07070b;--card:#0f0f18;--card2:#0b0b12;--line:#25253a;--text:#f3f3ff;--muted:#b8b8d6;
-      --red:#ff1a1a;--green:#7cfc90;--yellow:#ffd24a;
-      --shadow:0 18px 60px rgba(0,0,0,.55);--radius:18px;
+      --bg:#07070b;
+      --card:#0f0f17;
+      --line:rgba(255,255,255,.10);
+      --text:#f2f2ff;
+      --muted:#b7b7d6;
+      --red:#ff2a2a;
+      --green:#25d366;
+      --yellow:#ffb020;
+      --radius:18px;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
     }
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
-      radial-gradient(1200px 700px at 20% -10%, rgba(255,26,26,.18), transparent 55%),
-      radial-gradient(900px 600px at 95% 0%, rgba(124,252,144,.10), transparent 60%),
-      var(--bg);color:var(--text)}
-    .wrap{max-width:1150px;margin:0 auto;padding:18px}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    body{
+      margin:0;min-height:100vh;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 20% -10%, rgba(255,42,42,.18), transparent 55%),
+        radial-gradient(900px 600px at 90% 0%, rgba(255,42,42,.10), transparent 60%),
+        linear-gradient(180deg, #07070b, #050509 60%, #06060a);
+      color:var(--text);
+      padding:20px;
+      overflow-x:hidden;
+    }
+    .wrap{max-width:1200px;margin:0 auto}
+    .top{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+      margin:8px 0 16px;
+    }
     .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg, rgba(255,26,26,.26), rgba(255,26,26,.08));border:1px solid rgba(255,26,26,.28);box-shadow:var(--shadow);font-size:22px}
-    h1{font-size:20px;margin:0;letter-spacing:.3px}
-    .sub{margin:4px 0 0;color:var(--muted);font-size:13px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-    .chip{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px 12px;border-radius:999px;color:var(--muted);font-size:13px}
-    .chip input{border:none;outline:none;background:transparent;color:var(--text);min-width:220px;font-size:13px}
-    .btn{border:none;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer;background:var(--red);color:#101010;letter-spacing:.2px;transition:transform .08s ease, filter .15s ease}
-    .btn:hover{filter:brightness(1.05)}
+    .logo{
+      width:46px;height:46px;border-radius:16px;display:grid;place-items:center;
+      background:linear-gradient(135deg, rgba(255,42,42,.30), rgba(255,42,42,.06));
+      border:1px solid rgba(255,42,42,.25);
+      box-shadow:var(--shadow);
+      animation: float 2.8s ease-in-out infinite;
+    }
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+    h1{margin:0;font-size:18px}
+    .sub{margin-top:2px;color:var(--muted);font-size:12px}
+    .chip{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);font-size:13px;
+      backdrop-filter: blur(10px);
+    }
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:980px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+    .card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .pad{padding:14px}
+    .statTitle{color:var(--muted);font-size:12px;margin:0 0 6px}
+    .statValue{font-size:22px;font-weight:1000;margin:0}
+    .panel{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+    @media(min-width:980px){.panel{grid-template-columns:1.2fr .8fr}}
+    .panelHeader{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:14px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .panelHeader h2{margin:0;font-size:14px}
+    .panelHeader p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    input,select{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      padding:10px 12px;border-radius:14px;
+      outline:none;
+    }
+    .btn{
+      border:none;border-radius:14px;padding:10px 12px;
+      font-weight:900;cursor:pointer;
+      background:rgba(255,42,42,.16);
+      border:1px solid rgba(255,42,42,.30);
+      color:var(--text);
+      transition: transform .08s ease, filter .15s ease;
+    }
+    .btn:hover{filter:brightness(1.08)}
     .btn:active{transform:translateY(1px)}
-    .btn2{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--text);font-weight:800}
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
-
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .cardHead{padding:14px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .cardHead b{letter-spacing:.2px}
-    .cardBody{padding:14px}
-    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    @media (max-width: 600px){ .kpis{grid-template-columns:1fr} }
-    .kpi{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:12px;position:relative;overflow:hidden}
-    .kpi:before{content:"";position:absolute;inset:-40px -40px auto auto;width:120px;height:120px;border-radius:999px;background:radial-gradient(circle at 30% 30%, rgba(255,26,26,.25), transparent 60%);filter:blur(0px)}
-    .kpi .n{font-size:24px;font-weight:1000}
-    .kpi .t{color:var(--muted);font-size:12px;margin-top:2px}
-    .list{display:grid;gap:10px}
-    .item{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:12px;display:grid;gap:8px;position:relative;overflow:hidden;transform:translateY(0);animation:pop .25s ease}
-    @keyframes pop{from{transform:translateY(6px);opacity:.0}to{transform:translateY(0);opacity:1}}
-    .itemTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-    .title{font-weight:1000}
-    .meta{color:var(--muted);font-size:12px}
-    .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;color:var(--muted);font-size:12px}
-    .badge.pending{border-color:rgba(255,210,74,.35)}
-    .badge.approved{border-color:rgba(124,252,144,.35)}
-    .badge.rejected{border-color:rgba(255,77,77,.35)}
-    .actions{display:flex;gap:8px;flex-wrap:wrap}
-    .a{border:none;border-radius:12px;padding:10px 12px;font-weight:1000;cursor:pointer}
-    .a.ok{background:rgba(124,252,144,.90);color:#08110a}
-    .a.no{background:rgba(255,77,77,.92);color:#180606}
-    .a.ghost{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--text)}
-    .log{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:var(--muted);line-height:1.5;white-space:pre-wrap}
-    .hint{color:var(--muted);font-size:12px}
-    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:rgba(15,15,24,.92);border:1px solid rgba(255,255,255,.10);color:var(--text);padding:10px 12px;border-radius:14px;box-shadow:var(--shadow);display:none;max-width:min(740px, calc(100% - 22px))}
-    .toast.show{display:block;animation:pop .2s ease}
-    .small{font-size:12px;color:var(--muted)}
+    .btn.ok{background:rgba(37,211,102,.14);border-color:rgba(37,211,102,.26)}
+    .btn.secondary{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)}
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    th{color:var(--muted);font-size:12px;text-align:left;padding:0 10px 6px}
+    td{
+      padding:12px 10px;
+      background:rgba(0,0,0,.20);
+      border-top:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    tr td:first-child{border-left:1px solid rgba(255,255,255,.08);border-top-left-radius:14px;border-bottom-left-radius:14px}
+    tr td:last-child{border-right:1px solid rgba(255,255,255,.08);border-top-right-radius:14px;border-bottom-right-radius:14px}
+    .tag{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);color:var(--muted);font-size:12px}
+    .tag.pending{border-color:rgba(255,176,32,.30);color:#ffd9a0}
+    .tag.approved{border-color:rgba(37,211,102,.28);color:#b9f0cf}
+    .tag.rejected{border-color:rgba(255,42,42,.30);color:#ffb1b1}
+    .rowBtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+    .mini{padding:9px 10px;border-radius:12px;font-weight:900;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);cursor:pointer}
+    .mini.ok{border-color:rgba(37,211,102,.26);background:rgba(37,211,102,.12)}
+    .mini.danger{border-color:rgba(255,42,42,.30);background:rgba(255,42,42,.14)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+    .toast{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:9999}
+    .toastItem{min-width:260px;max-width:360px;background:rgba(10,10,16,.92);border:1px solid rgba(255,255,255,.10);box-shadow:var(--shadow);border-radius:16px;padding:12px;color:var(--text);backdrop-filter: blur(10px);animation: pop .14s ease-out}
+    @keyframes pop{from{transform:translateY(6px);opacity:.0}to{transform:none;opacity:1}}
+    .toastItem small{display:block;color:var(--muted);margin-top:4px}
+    .box{padding:12px}
+    .help{color:var(--muted);font-size:12px;line-height:1.45}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="logo">🛡️</div>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">🦶</div>
+      <div>
+        <h1>Painel ADM — PNP</h1>
+        <div class="sub">Aprovação manual • bonita e animada</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <div class="chip">Status: <b id="statusTxt">configurar</b></div>
+      <button class="btn secondary" id="btnConfig">Config</button>
+      <button class="btn" id="btnRefresh">Atualizar</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card pad">
+      <p class="statTitle">Pendentes</p>
+      <p class="statValue" id="statPending">—</p>
+    </div>
+    <div class="card pad">
+      <p class="statTitle">Aprovados (24h)</p>
+      <p class="statValue" id="statApproved">—</p>
+    </div>
+    <div class="card pad">
+      <p class="statTitle">Recusados (24h)</p>
+      <p class="statValue" id="statRejected">—</p>
+    </div>
+    <div class="card pad">
+      <p class="statTitle">API Base</p>
+      <p class="statValue mono" style="font-size:12px" id="statApi">—</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <div class="panelHeader">
         <div>
-          <h1>Dashboard de Aprovação</h1>
-          <div class="sub">Aprovar/Rejeitar inscrições • Atualiza a cada 5s</div>
+          <h2>📥 Formulários</h2>
+          <p>Filtre e aprove/recuse.</p>
+        </div>
+        <div class="filters">
+          <input id="q" placeholder="Pesquisar (nick, @, id...)" />
+          <select id="status">
+            <option value="pending" selected>Pendentes</option>
+            <option value="approved">Aprovados</option>
+            <option value="rejected">Recusados</option>
+            <option value="all">Todos</option>
+          </select>
         </div>
       </div>
 
-      <div class="row">
-        <div class="chip">
-          API
-          <input id="api" placeholder="https://api-pe-na-porta.vercel.app" />
+      <div class="box">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>Nick</th>
+              <th>Idade</th>
+              <th>Status</th>
+              <th>Quando</th>
+              <th style="text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+
+        <div id="empty" class="help" style="display:none;padding:12px;border:1px dashed rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.03)">
+          Nada aqui ainda.
         </div>
-        <div class="chip">
-          KEY
-          <input id="key" placeholder="Bearer key (só aqui no dashboard)" />
-        </div>
-        <button class="btn2 btn" style="background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--text)" onclick="saveCfg()">Salvar</button>
-        <button class="btn" onclick="refreshNow()">Atualizar</button>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <div class="cardHead">
-          <b>Fila</b>
-          <span class="hint" id="status">—</span>
-        </div>
-        <div class="cardBody">
-          <div class="kpis">
-            <div class="kpi"><div class="n" id="kPending">0</div><div class="t">Pendentes</div></div>
-            <div class="kpi"><div class="n" id="kApproved">0</div><div class="t">Aprovados</div></div>
-            <div class="kpi"><div class="n" id="kRejected">0</div><div class="t">Rejeitados</div></div>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="list" id="list"></div>
-          <div class="small" style="margin-top:10px">
-            Dica: o bot pega os aprovados na rota <code>/api/bot/approved</code> e marca como done em <code>/api/bot/mark-done</code>.
-          </div>
+    <div class="card">
+      <div class="panelHeader">
+        <div>
+          <h2>⚙️ Configuração</h2>
+          <p>Guarda no navegador (somente staff).</p>
         </div>
       </div>
-
-      <div class="card">
-        <div class="cardHead">
-          <b>Logs (local)</b>
-          <span class="hint">últimas ações</span>
+      <div class="box">
+        <div class="help">
+          <b>API_BASE</b>: URL pública da API (ShardCloud).<br/>
+          <b>ADMIN_API_KEY</b>: chave do painel (Bearer).<br/><br/>
+          Dica: se der 401, a chave está errada ou não foi setada nas env da API.
         </div>
-        <div class="cardBody">
-          <div class="log" id="log"></div>
+
+        <div style="margin-top:12px;display:grid;gap:10px">
+          <input id="cfgApi" placeholder="API_BASE (ex: https://pnp-api.shardweb.app)" />
+          <input id="cfgKey" placeholder="ADMIN_API_KEY" />
+          <button class="btn ok" id="btnSave">Salvar</button>
+          <button class="btn secondary" id="btnTest">Testar /health</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-  const LS_KEY = "PENAPORTA_DASH_CFG_V1";
-  const DEFAULT_API = "https://api-pe-na-porta.vercel.app";
+  const $ = (id) => document.getElementById(id);
 
-  const elApi = document.getElementById("api");
-  const elKey = document.getElementById("key");
-  const elStatus = document.getElementById("status");
-  const elList = document.getElementById("list");
-  const elLog = document.getElementById("log");
-
-  const toast = (t) => {
-    const el = document.getElementById("toast");
-    el.textContent = t;
-    el.classList.add("show");
-    clearTimeout(window.__t);
-    window.__t = setTimeout(()=> el.classList.remove("show"), 1800);
-  };
-
-  function readCfg(){
-    try{
-      const c = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
-      elApi.value = c.api || DEFAULT_API;
-      elKey.value = c.key || "";
-    }catch{
-      elApi.value = DEFAULT_API;
-      elKey.value = "";
-    }
+  function toast(msg, kind="info"){
+    const el = document.createElement("div");
+    el.className = "toastItem";
+    el.innerHTML = `<b>${kind==="ok"?"✅":kind==="err"?"❌":"ℹ️"} ${escapeHtml(msg)}</b><small>${new Date().toLocaleString()}</small>`;
+    $("toast").appendChild(el);
+    setTimeout(()=> el.remove(), 4200);
   }
-  function saveCfg(){
-    const api = (elApi.value || DEFAULT_API).trim().replace(/\/$/, "");
-    const key = (elKey.value || "").trim();
-    localStorage.setItem(LS_KEY, JSON.stringify({ api, key }));
-    toast("Config salvo ✅");
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+
+  function setStatus(txt, ok=null){
+    $("statusTxt").textContent = txt;
+    $("statusTxt").style.color = ok===true ? "#b9f0cf" : ok===false ? "#ffb1b1" : "";
   }
 
-  function authHeaders(){
-    const key = (elKey.value || "").trim();
-    return key ? { "Authorization": key.startsWith("Bearer ") ? key : ("Bearer " + key) } : {};
+  function getCfg(){
+    return {
+      api: localStorage.getItem("PNP_API_BASE") || "",
+      key: localStorage.getItem("PNP_ADMIN_KEY") || ""
+    };
+  }
+  function setCfg(api, key){
+    localStorage.setItem("PNP_API_BASE", api);
+    localStorage.setItem("PNP_ADMIN_KEY", key);
   }
 
-  function badgeClass(s){
-    if(s==="approved") return "approved";
-    if(s==="rejected") return "rejected";
-    return "pending";
+  function fmtTime(ts){
+    if(!ts) return "—";
+    const d = new Date(ts);
+    const diff = Date.now() - d.getTime();
+    const mins = Math.floor(diff/60000);
+    if(mins < 1) return "agora";
+    if(mins < 60) return mins + " min";
+    const hrs = Math.floor(mins/60);
+    if(hrs < 24) return hrs + " h";
+    const days = Math.floor(hrs/24);
+    return days + " d";
   }
-  function fmtTime(ms){
-    try{
-      const d = new Date(ms);
-      return d.toLocaleString();
-    }catch{return "—"}
-  }
-  function logLine(line){
-    const prev = elLog.textContent.trim();
-    elLog.textContent = (line + "\n" + prev).slice(0, 4000);
+  function tagHtml(status){
+    if(status==="approved") return `<span class="tag approved">✅ aprovado</span>`;
+    if(status==="rejected") return `<span class="tag rejected">❌ recusado</span>`;
+    return `<span class="tag pending">⏳ pendente</span>`;
   }
 
-  async function apiGet(path){
-    const api = (elApi.value || DEFAULT_API).trim().replace(/\/$/, "");
-    const res = await fetch(api + path, { headers: { ...authHeaders() }});
+  async function api(path, opts={}){
+    const cfg = getCfg();
+    const base = (cfg.api || "").replace(/\/$/,"");
+    if(!base) throw new Error("Configure API_BASE");
+    const url = base + path;
+    const headers = Object.assign({
+      "Content-Type":"application/json",
+      "Authorization":"Bearer " + (cfg.key || "")
+    }, opts.headers || {});
+    const res = await fetch(url, Object.assign({}, opts, { headers }));
     const data = await res.json().catch(()=> ({}));
     if(!res.ok) throw new Error(data.error || ("HTTP "+res.status));
     return data;
   }
 
-  async function apiPost(path){
-    const api = (elApi.value || DEFAULT_API).trim().replace(/\/$/, "");
-    const res = await fetch(api + path, {
-      method:"POST",
-      headers: { "Content-Type":"application/json", ...authHeaders() },
-      body: JSON.stringify({})
+  let cache = [];
+
+  function applyFilter(){
+    const q = $("q").value.trim().toLowerCase();
+    const st = $("status").value;
+
+    const rows = cache.filter(x=>{
+      const okStatus = (st==="all") ? true : (x.status===st);
+      if(!okStatus) return false;
+      if(!q) return true;
+      const hay = [x.discordTag, x.userId, x.nick, x.id].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(q);
     });
-    const data = await res.json().catch(()=> ({}));
-    if(!res.ok) throw new Error(data.error || ("HTTP "+res.status));
-    return data;
+    render(rows);
   }
 
-  function render(items){
-    const pending = items.filter(x=>x.status==="pending").length;
-    const approved = items.filter(x=>x.status==="approved").length;
-    const rejected = items.filter(x=>x.status==="rejected").length;
-    document.getElementById("kPending").textContent = pending;
-    document.getElementById("kApproved").textContent = approved;
-    document.getElementById("kRejected").textContent = rejected;
+  function render(rows){
+    const tb = $("tbody");
+    tb.innerHTML = "";
+    $("empty").style.display = rows.length ? "none" : "block";
 
-    // Mostra pending primeiro
-    const sorted = [...items].sort((a,b)=>{
-      const w = (s)=> s==="pending"?0:(s==="approved"?1:2);
-      return w(a.status)-w(b.status) || (b.createdAt-a.createdAt);
-    });
+    for(const item of rows){
+      const tr = document.createElement("tr");
+      const user = escapeHtml(item.discordTag || ("ID:"+ (item.userId||"—")));
+      const nick = escapeHtml(item.nick || "—");
+      const idade = item.idade != null ? escapeHtml(item.idade) : "—";
+      const when = fmtTime(item.createdAt || item.updatedAt);
 
-    elList.innerHTML = "";
-    if(!sorted.length){
-      elList.innerHTML = '<div class="hint">Sem inscrições ainda.</div>';
-      return;
-    }
-
-    for(const it of sorted){
-      const div = document.createElement("div");
-      div.className = "item";
-
-      div.innerHTML = `
-        <div class="itemTop">
-          <div>
-            <div class="title">${escapeHtml(it.nick || "—")} <span class="badge ${badgeClass(it.status)}">${escapeHtml(it.status)}</span></div>
-            <div class="meta">idade: <b>${escapeHtml(String(it.idade||"—"))}</b> • token: <b>${escapeHtml(it.token||"—")}</b></div>
-            <div class="meta">criado: ${escapeHtml(fmtTime(it.createdAt||0))}</div>
-          </div>
-          <div class="actions">
-            ${it.status==="pending" ? `
-              <button class="a ok" data-act="approve" data-id="${escapeHtml(it.id)}">Aprovar</button>
-              <button class="a no" data-act="reject" data-id="${escapeHtml(it.id)}">Rejeitar</button>
-            ` : `
-              <button class="a ghost" data-act="copy" data-id="${escapeHtml(it.id)}">Copiar ID</button>
-            `}
-          </div>
+      const actions = `
+        <div class="rowBtns">
+          ${item.status==="pending" ? `
+            <button class="mini ok" data-act="approve" data-id="${escapeHtml(item.id)}">Aprovar</button>
+            <button class="mini danger" data-act="reject" data-id="${escapeHtml(item.id)}">Recusar</button>
+          ` : `
+            <button class="mini" data-act="pending" data-id="${escapeHtml(item.id)}">Voltar</button>
+          `}
         </div>
-        <div class="meta"><b>discord:</b> ${escapeHtml(it.discordTag||"—")} • <b>link:</b> ${escapeHtml(it.linkBonde||"—")}</div>
-        <div class="meta"><b>motivo:</b> ${escapeHtml(it.motivo||"—")}</div>
       `;
 
-      div.addEventListener("click", async (e)=>{
-        const btn = e.target.closest("button");
-        if(!btn) return;
-        e.preventDefault();
-        e.stopPropagation();
-
-        const id = btn.getAttribute("data-id");
-        const act = btn.getAttribute("data-act");
-        try{
-          if(act==="copy"){
-            await navigator.clipboard.writeText(id);
-            toast("Copiado ✅");
-            return;
-          }
-          if(act==="approve"){
-            await apiPost(`/api/admin/submissions/${encodeURIComponent(id)}/approve`);
-            logLine(`✅ aprovado ${id}`);
-            toast("Aprovado ✅");
-            await refreshNow();
-            return;
-          }
-          if(act==="reject"){
-            await apiPost(`/api/admin/submissions/${encodeURIComponent(id)}/reject`);
-            logLine(`❌ rejeitado ${id}`);
-            toast("Rejeitado ❌");
-            await refreshNow();
-            return;
-          }
-        }catch(err){
-          toast("Erro: " + (err.message||err));
-          logLine("ERRO: " + (err.message||err));
-        }
-      });
-
-      elList.appendChild(div);
+      tr.innerHTML = `
+        <td><b>${user}</b><div class="mono" style="color:var(--muted);font-size:11px;margin-top:4px">${escapeHtml(item.userId||"")}</div></td>
+        <td>${nick}</td>
+        <td>${idade}</td>
+        <td>${tagHtml(item.status || "pending")}</td>
+        <td>${escapeHtml(when)}</td>
+        <td style="text-align:right">${actions}</td>
+      `;
+      tb.appendChild(tr);
     }
   }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-  }
-
-  let timer = null;
-
-  async function refreshNow(){
-    elStatus.textContent = "Carregando...";
+  async function load(){
     try{
-      const data = await apiGet("/api/admin/submissions");
-      render(data.items || []);
-      elStatus.textContent = "Online ✅";
-    }catch(err){
-      elStatus.textContent = "Erro ❌";
-      toast("Erro: " + (err.message||err));
-      logLine("ERRO: " + (err.message||err));
+      setStatus("carregando...", null);
+      const st = $("status").value;
+      const data = await api(`/admin/submissions?status=${encodeURIComponent(st)}`);
+      cache = Array.isArray(data.items) ? data.items : [];
+      $("statPending").textContent  = data.stats?.pending ?? "—";
+      $("statApproved").textContent = data.stats?.approved24h ?? "—";
+      $("statRejected").textContent = data.stats?.rejected24h ?? "—";
+
+      const cfg = getCfg();
+      $("statApi").textContent = cfg.api || "—";
+
+      setStatus("online", true);
+      applyFilter();
+    }catch(e){
+      setStatus("offline", false);
+      cache = [];
+      render([]);
+      toast(e.message || e, "err");
     }
   }
 
-  readCfg();
-  refreshNow();
-  timer = setInterval(refreshNow, 5000);
+  async function approve(id){
+    const reason = prompt("Motivo (opcional):") || "";
+    try{
+      await api(`/admin/submissions/${encodeURIComponent(id)}/approve`, {
+        method:"POST",
+        body: JSON.stringify({ reason })
+      });
+      toast("Aprovado!", "ok");
+      await load();
+    }catch(e){ toast(e.message || e, "err"); }
+  }
+
+  async function reject(id){
+    const reason = prompt("Motivo da recusa (obrigatório):") || "";
+    if(!reason.trim()) return toast("Recusa cancelada.", "info");
+    try{
+      await api(`/admin/submissions/${encodeURIComponent(id)}/reject`, {
+        method:"POST",
+        body: JSON.stringify({ reason })
+      });
+      toast("Recusado!", "ok");
+      await load();
+    }catch(e){ toast(e.message || e, "err"); }
+  }
+
+  async function pending(id){
+    try{
+      await api(`/admin/submissions/${encodeURIComponent(id)}/pending`, { method:"POST" });
+      toast("Voltou para pendente.", "ok");
+      await load();
+    }catch(e){ toast(e.message || e, "err"); }
+  }
+
+  $("btnRefresh").addEventListener("click", load);
+  $("q").addEventListener("input", applyFilter);
+  $("status").addEventListener("change", load);
+
+  $("tbody").addEventListener("click", (e)=>{
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    const act = btn.getAttribute("data-act");
+    const id = btn.getAttribute("data-id");
+    if(!act || !id) return;
+    if(act==="approve") return approve(id);
+    if(act==="reject") return reject(id);
+    if(act==="pending") return pending(id);
+  });
+
+  $("btnConfig").addEventListener("click", ()=>{
+    const cfg = getCfg();
+    $("cfgApi").value = cfg.api;
+    $("cfgKey").value = cfg.key;
+    toast("Config aberta. Preencha e salve.", "info");
+  });
+
+  $("btnSave").addEventListener("click", ()=>{
+    const api = $("cfgApi").value.trim().replace(/\/$/,"");
+    const key = $("cfgKey").value.trim();
+    if(!api) return toast("API_BASE vazio.", "err");
+    if(!key) return toast("ADMIN_API_KEY vazio.", "err");
+    setCfg(api, key);
+    toast("Salvo.", "ok");
+    load();
+  });
+
+  $("btnTest").addEventListener("click", async ()=>{
+    try{
+      const cfg = getCfg();
+      if(!cfg.api) return toast("Configure API_BASE.", "err");
+      const res = await fetch(cfg.api.replace(/\/$/,"") + "/health");
+      const data = await res.json().catch(()=> ({}));
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      toast("Health OK: " + (data.ok ? "ok" : "ok"), "ok");
+    }catch(e){ toast(e.message || e, "err"); }
+  });
+
+  // boot
+  (function(){
+    const cfg = getCfg();
+    $("statApi").textContent = cfg.api || "—";
+    if(!cfg.api || !cfg.key){
+      setStatus("configurar", false);
+      $("cfgApi").value = cfg.api || "";
+      $("cfgKey").value = cfg.key || "";
+      toast("Clique em Config e coloque API_BASE + ADMIN_API_KEY.", "info");
+    } else {
+      load();
+    }
+  })();
 </script>
 </body>
 </html>
