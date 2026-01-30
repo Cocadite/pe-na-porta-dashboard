@@ -1,181 +1,287 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Painel ADM — PNP</title>
-  <style>
-    :root{
-      --bg:#07070b;
-      --card:#0f0f17;
-      --line:rgba(255,255,255,.10);
-      --text:#f2f2ff;
-      --muted:#b7b7d6;
-      --red:#ff2a2a;
-      --green:#25d366;
-      --yellow:#ffb020;
-      --radius:18px;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;min-height:100vh;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:
-        radial-gradient(1000px 600px at 20% -10%, rgba(255,42,42,.18), transparent 55%),
-        radial-gradient(900px 600px at 90% 0%, rgba(255,42,42,.10), transparent 60%),
-        linear-gradient(180deg, #07070b, #050509 60%, #06060a);
-      color:var(--text);
-      padding:20px;
-      overflow-x:hidden;
-    }
-    .wrap{max-width:1200px;margin:0 auto}
-    .top{
-      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-      margin:8px 0 16px;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:46px;height:46px;border-radius:16px;display:grid;place-items:center;
-      background:linear-gradient(135deg, rgba(255,42,42,.30), rgba(255,42,42,.06));
-      border:1px solid rgba(255,42,42,.25);
-      box-shadow:var(--shadow);
-      animation: float 2.8s ease-in-out infinite;
-    }
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-    h1{margin:0;font-size:18px}
-    .sub{margin-top:2px;color:var(--muted);font-size:12px}
-    .chip{
-      display:inline-flex;align-items:center;gap:10px;
-      padding:10px 12px;border-radius:999px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--muted);font-size:13px;
-      backdrop-filter: blur(10px);
-    }
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:980px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
-    .card{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .pad{padding:14px}
-    .statTitle{color:var(--muted);font-size:12px;margin:0 0 6px}
-    .statValue{font-size:22px;font-weight:1000;margin:0}
-    .panel{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
-    @media(min-width:980px){.panel{grid-template-columns:1.2fr .8fr}}
-    .panelHeader{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:14px;border-bottom:1px solid rgba(255,255,255,.08)}
-    .panelHeader h2{margin:0;font-size:14px}
-    .panelHeader p{margin:4px 0 0;color:var(--muted);font-size:12px}
-    .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    input,select{
-      background:rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--text);
-      padding:10px 12px;border-radius:14px;
-      outline:none;
-    }
-    .btn{
-      border:none;border-radius:14px;padding:10px 12px;
-      font-weight:900;cursor:pointer;
-      background:rgba(255,42,42,.16);
-      border:1px solid rgba(255,42,42,.30);
-      color:var(--text);
-      transition: transform .08s ease, filter .15s ease;
-    }
-    .btn:hover{filter:brightness(1.08)}
-    .btn:active{transform:translateY(1px)}
-    .btn.ok{background:rgba(37,211,102,.14);border-color:rgba(37,211,102,.26)}
-    .btn.secondary{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)}
-    table{width:100%;border-collapse:separate;border-spacing:0 10px}
-    th{color:var(--muted);font-size:12px;text-align:left;padding:0 10px 6px}
-    td{
-      padding:12px 10px;
-      background:rgba(0,0,0,.20);
-      border-top:1px solid rgba(255,255,255,.08);
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    tr td:first-child{border-left:1px solid rgba(255,255,255,.08);border-top-left-radius:14px;border-bottom-left-radius:14px}
-    tr td:last-child{border-right:1px solid rgba(255,255,255,.08);border-top-right-radius:14px;border-bottom-right-radius:14px}
-    .tag{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);color:var(--muted);font-size:12px}
-    .tag.pending{border-color:rgba(255,176,32,.30);color:#ffd9a0}
-    .tag.approved{border-color:rgba(37,211,102,.28);color:#b9f0cf}
-    .tag.rejected{border-color:rgba(255,42,42,.30);color:#ffb1b1}
-    .rowBtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-    .mini{padding:9px 10px;border-radius:12px;font-weight:900;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);cursor:pointer}
-    .mini.ok{border-color:rgba(37,211,102,.26);background:rgba(37,211,102,.12)}
-    .mini.danger{border-color:rgba(255,42,42,.30);background:rgba(255,42,42,.14)}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
-    .toast{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:9999}
-    .toastItem{min-width:260px;max-width:360px;background:rgba(10,10,16,.92);border:1px solid rgba(255,255,255,.10);box-shadow:var(--shadow);border-radius:16px;padding:12px;color:var(--text);backdrop-filter: blur(10px);animation: pop .14s ease-out}
-    @keyframes pop{from{transform:translateY(6px);opacity:.0}to{transform:none;opacity:1}}
-    .toastItem small{display:block;color:var(--muted);margin-top:4px}
-    .box{padding:12px}
-    .help{color:var(--muted);font-size:12px;line-height:1.45}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Painel ADM — PNP</title>
+
+<style>
+  :root{
+    --bg:#07070b;
+    --panel:#0d0d14;
+    --line:rgba(255,255,255,.10);
+    --line2:rgba(255,255,255,.08);
+    --text:#f3f3ff;
+    --muted:#b8b8d6;
+    --red:#ff2b2b;
+    --ok:#25d366;
+    --warn:#ffb020;
+    --shadow:0 18px 60px rgba(0,0,0,.55);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(255,43,43,.18), transparent 55%),
+      radial-gradient(900px 600px at 90% 0%, rgba(255,43,43,.10), transparent 60%),
+      radial-gradient(800px 500px at 30% 110%, rgba(255,255,255,.04), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    padding:18px;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1200px;margin:0 auto}
+
+  /* animações */
+  .fadeIn{animation: fade .18s ease-out}
+  @keyframes fade{from{opacity:.0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    margin-bottom:14px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+    background: linear-gradient(135deg, rgba(255,43,43,.26), rgba(255,43,43,.08));
+    border:1px solid rgba(255,43,43,.30);
+    box-shadow: var(--shadow);
+    font-size:22px;
+    animation: float 2.8s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .brand h1{font-size:18px;margin:0;letter-spacing:.2px}
+  .brand .sub{margin-top:3px;color:var(--muted);font-size:12px}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .chip{
+    display:inline-flex;align-items:center;gap:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line2);
+    padding:10px 12px;border-radius:999px;
+    color:var(--muted);font-size:13px;
+  }
+  .chip b{color:var(--text)}
+  .btn{
+    border:none;border-radius:14px;padding:10px 12px;
+    font-weight:900;cursor:pointer;
+    background:rgba(255,43,43,.18);
+    border:1px solid rgba(255,43,43,.30);
+    color:var(--text);
+    transition: transform .08s ease, filter .15s ease, background .15s ease;
+  }
+  .btn:hover{filter:brightness(1.08); background:rgba(255,43,43,.24)}
+  .btn:active{transform:translateY(1px)}
+  .btn.secondary{background:rgba(255,255,255,.04);border:1px solid var(--line2)}
+  .btn.ok{background:rgba(37,211,102,.14);border:1px solid rgba(37,211,102,.26)}
+  .btn.danger{background:rgba(255,43,43,.22);border:1px solid rgba(255,43,43,.32)}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:980px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .card.pad{padding:14px}
+  .statTitle{color:var(--muted);font-size:12px;margin:0 0 6px 0}
+  .statValue{font-size:22px;font-weight:1000;margin:0}
+  .statHint{color:var(--muted);font-size:12px;margin-top:8px}
+
+  .panel{margin-top:12px;display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:980px){.panel{grid-template-columns:1.2fr .8fr}}
+
+  .panelHeader{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+    padding:14px 14px 10px 14px;
+    border-bottom:1px solid var(--line2);
+  }
+  .panelHeader h2{margin:0;font-size:14px;letter-spacing:.2px}
+  .panelHeader p{margin:4px 0 0;color:var(--muted);font-size:12px}
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .input,.select{
+    background:rgba(0,0,0,.22);
+    border:1px solid var(--line2);
+    color:var(--text);
+    padding:10px 12px;border-radius:14px;
+    outline:none;
+  }
+  .input{min-width:240px}
+
+  .tableWrap{padding:10px 14px 14px 14px}
+  table{width:100%;border-collapse:separate;border-spacing:0 10px}
+  th{ text-align:left;font-size:12px;color:var(--muted);font-weight:800;padding:0 10px 6px 10px; }
+  td{
+    padding:12px 10px;background:rgba(0,0,0,.20);
+    border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);
+  }
+  tr td:first-child{border-left:1px solid var(--line2);border-top-left-radius:14px;border-bottom-left-radius:14px}
+  tr td:last-child{border-right:1px solid var(--line2);border-top-right-radius:14px;border-bottom-right-radius:14px}
+
+  .tag{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 10px;border-radius:999px;
+    border:1px solid var(--line2);
+    background:rgba(255,255,255,.03);
+    color:var(--muted);font-size:12px;white-space:nowrap;
+  }
+  .tag.pending{border-color:rgba(255,176,32,.30); color:#ffd9a0}
+  .tag.approved{border-color:rgba(37,211,102,.28); color:#b9f0cf}
+  .tag.rejected{border-color:rgba(255,43,43,.30); color:#ffb1b1}
+
+  .rowBtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+  .mini{
+    padding:9px 10px;border-radius:12px;font-weight:900;
+    border:1px solid var(--line2);
+    background:rgba(255,255,255,.04);
+    cursor:pointer;
+  }
+  .mini.ok{border-color:rgba(37,211,102,.26);background:rgba(37,211,102,.12)}
+  .mini.danger{border-color:rgba(255,43,43,.30);background:rgba(255,43,43,.14)}
+  .mini:hover{filter:brightness(1.06)}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+
+  .box{
+    background:rgba(0,0,0,.20);
+    border:1px solid var(--line2);
+    border-radius:16px;
+    padding:12px;
+    margin:12px 14px 14px 14px;
+  }
+  .box h3{margin:0 0 6px 0;font-size:13px}
+  .box p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+
+  .empty{
+    padding:14px;color:var(--muted);font-size:13px;
+    border:1px dashed rgba(255,255,255,.14);
+    border-radius:16px;background:rgba(255,255,255,.03);
+    display:none;
+  }
+
+  /* toast */
+  .toast{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:9999}
+  .toastItem{
+    min-width:260px;max-width:360px;
+    background:rgba(10,10,16,.92);
+    border:1px solid var(--line2);
+    box-shadow: var(--shadow);
+    border-radius:16px;
+    padding:12px 12px;
+    color:var(--text);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: fade .14s ease-out;
+  }
+  .toastItem small{display:block;color:var(--muted);margin-top:4px}
+
+  /* login gate */
+  .gate{
+    position:fixed; inset:0; z-index:99999;
+    display:none;
+    align-items:center; justify-content:center;
+    padding:18px;
+    background:rgba(0,0,0,.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .gateCard{
+    width:min(520px,100%);
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    border:1px solid var(--line);
+    border-radius:20px;
+    box-shadow: var(--shadow);
+    padding:16px;
+  }
+  .gateTitle{display:flex;gap:12px;align-items:center}
+  .gateTitle b{font-size:16px}
+  .gateTitle p{margin:6px 0 0;color:var(--muted);font-size:12px}
+  .gateInput{
+    margin-top:14px;
+    width:100%;
+    border-radius:14px;
+    border:1px solid var(--line2);
+    background:rgba(0,0,0,.35);
+    color:var(--text);
+    padding:12px;
+    outline:none;
+  }
+  .gateRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .gateErr{margin-top:10px;color:#ffb1b1;font-size:12px;display:none}
+</style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="top">
+<div class="wrap fadeIn">
+
+  <div class="topbar">
     <div class="brand">
       <div class="logo">🦶</div>
       <div>
         <h1>Painel ADM — PNP</h1>
-        <div class="sub">Aprovação manual • bonita e animada</div>
+        <div class="sub">Login por ADMIN_API_KEY • aprova/recusa • clean</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <div class="chip">Status: <b id="statusTxt">configurar</b></div>
-      <button class="btn secondary" id="btnConfig">Config</button>
+    <div class="actions">
+      <div class="chip">Status: <b id="statusTxt">travado</b></div>
+      <button class="btn secondary" id="btnLogout">Sair</button>
+      <button class="btn secondary" id="btnTest">Testar API</button>
       <button class="btn" id="btnRefresh">Atualizar</button>
     </div>
   </div>
 
   <div class="grid">
     <div class="card pad">
-      <p class="statTitle">Pendentes</p>
+      <p class="statTitle">⏳ Pendentes</p>
       <p class="statValue" id="statPending">—</p>
+      <div class="statHint">Aguardando decisão</div>
     </div>
     <div class="card pad">
-      <p class="statTitle">Aprovados (24h)</p>
+      <p class="statTitle">✅ Aprovados (24h)</p>
       <p class="statValue" id="statApproved">—</p>
+      <div class="statHint">Últimas aprovações</div>
     </div>
     <div class="card pad">
-      <p class="statTitle">Recusados (24h)</p>
+      <p class="statTitle">❌ Recusados (24h)</p>
       <p class="statValue" id="statRejected">—</p>
+      <div class="statHint">Últimas recusas</div>
     </div>
     <div class="card pad">
-      <p class="statTitle">API Base</p>
-      <p class="statValue mono" style="font-size:12px" id="statApi">—</p>
+      <p class="statTitle">🧩 Servidor</p>
+      <p class="statValue mono" id="statGuild">—</p>
+      <div class="statHint">Guild ID</div>
     </div>
   </div>
 
   <div class="panel">
+
     <div class="card">
       <div class="panelHeader">
         <div>
           <h2>📥 Formulários</h2>
-          <p>Filtre e aprove/recuse.</p>
+          <p>Filtra e aprova/recusa.</p>
         </div>
         <div class="filters">
-          <input id="q" placeholder="Pesquisar (nick, @, id...)" />
-          <select id="status">
+          <input class="input" id="q" placeholder="Pesquisar (nick, discord...)" />
+          <select class="select" id="status">
+            <option value="all">Todos</option>
             <option value="pending" selected>Pendentes</option>
             <option value="approved">Aprovados</option>
             <option value="rejected">Recusados</option>
-            <option value="all">Todos</option>
           </select>
         </div>
       </div>
 
-      <div class="box">
+      <div class="tableWrap">
         <table>
           <thead>
             <tr>
-              <th>Usuário</th>
+              <th>Discord</th>
               <th>Nick</th>
               <th>Idade</th>
               <th>Status</th>
@@ -186,207 +292,299 @@
           <tbody id="tbody"></tbody>
         </table>
 
-        <div id="empty" class="help" style="display:none;padding:12px;border:1px dashed rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.03)">
-          Nada aqui ainda.
-        </div>
+        <div id="empty" class="empty">Nada aqui (ou falta permissão).</div>
       </div>
     </div>
 
     <div class="card">
       <div class="panelHeader">
         <div>
-          <h2>⚙️ Configuração</h2>
-          <p>Guarda no navegador (somente staff).</p>
+          <h2>⚙️ Info</h2>
+          <p>Configuração rápida.</p>
         </div>
       </div>
-      <div class="box">
-        <div class="help">
-          <b>API_BASE</b>: URL pública da API (ShardCloud).<br/>
-          <b>ADMIN_API_KEY</b>: chave do painel (Bearer).<br/><br/>
-          Dica: se der 401, a chave está errada ou não foi setada nas env da API.
-        </div>
 
-        <div style="margin-top:12px;display:grid;gap:10px">
-          <input id="cfgApi" placeholder="API_BASE (ex: https://pnp-api.shardweb.app)" />
-          <input id="cfgKey" placeholder="ADMIN_API_KEY" />
-          <button class="btn ok" id="btnSave">Salvar</button>
-          <button class="btn secondary" id="btnTest">Testar /health</button>
-        </div>
+      <div class="box">
+        <h3>API</h3>
+        <p>Base: <span class="mono" id="kvApi">—</span></p>
+        <p>Key: <span class="mono" id="kvKey">—</span></p>
+      </div>
+
+      <div class="box">
+        <h3>Dicas</h3>
+        <p>
+          • Se der 401, a key está errada.<br/>
+          • Se der 0 itens, não tem pendentes.<br/>
+          • Aprovou aqui = bot dá cargo automaticamente (pelo loop/webhook).
+        </p>
       </div>
     </div>
+
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- LOGIN GATE -->
+<div class="gate" id="gate">
+  <div class="gateCard fadeIn">
+    <div class="gateTitle">
+      <div class="logo" style="animation:none">🔒</div>
+      <div>
+        <b>Login do Staff</b>
+        <p>Digite a <span class="mono">ADMIN_API_KEY</span> para abrir o painel.</p>
+      </div>
+    </div>
+
+    <input id="keyInput" class="gateInput" placeholder="Cole a ADMIN_API_KEY aqui..." />
+    <div class="gateRow">
+      <button class="btn ok" id="btnEnter">Entrar</button>
+      <button class="btn secondary" id="btnClear">Limpar</button>
+    </div>
+    <div class="gateErr" id="gateErr">Key inválida (401). Tenta de novo.</div>
+  </div>
+</div>
+
 <script>
-  const $ = (id) => document.getElementById(id);
+  // ✅ MUDA AQUI:
+  const API_BASE = "https://pnp-api.shardweb.app"; // sem / no final
+
+  // ====== key storage ======
+  const KEY_STORE = "PNP_ADMIN_KEY";
+  const $ = (id)=>document.getElementById(id);
 
   function toast(msg, kind="info"){
     const el = document.createElement("div");
     el.className = "toastItem";
     el.innerHTML = `<b>${kind==="ok"?"✅":kind==="err"?"❌":"ℹ️"} ${escapeHtml(msg)}</b><small>${new Date().toLocaleString()}</small>`;
     $("toast").appendChild(el);
-    setTimeout(()=> el.remove(), 4200);
+    setTimeout(()=>el.remove(), 3800);
   }
-  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g,(c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+  }
 
   function setStatus(txt, ok=null){
     $("statusTxt").textContent = txt;
     $("statusTxt").style.color = ok===true ? "#b9f0cf" : ok===false ? "#ffb1b1" : "";
   }
 
-  function getCfg(){
-    return {
-      api: localStorage.getItem("PNP_API_BASE") || "",
-      key: localStorage.getItem("PNP_ADMIN_KEY") || ""
-    };
+  function getKey(){
+    return sessionStorage.getItem(KEY_STORE) || "";
   }
-  function setCfg(api, key){
-    localStorage.setItem("PNP_API_BASE", api);
-    localStorage.setItem("PNP_ADMIN_KEY", key);
+  function setKey(v){
+    sessionStorage.setItem(KEY_STORE, v);
+  }
+  function clearKey(){
+    sessionStorage.removeItem(KEY_STORE);
+  }
+
+  // ====== API helper (usa a key do login) ======
+  async function api(path, opts={}){
+    const url = API_BASE.replace(/\/$/,"") + path;
+    const key = getKey();
+    const headers = Object.assign({
+      "Content-Type":"application/json",
+      "Authorization":"Bearer " + key
+    }, opts.headers || {});
+    const res = await fetch(url, Object.assign({}, opts, { headers }));
+    let data=null; try{ data=await res.json(); }catch(_){}
+    if(!res.ok){
+      const msg = data?.error || data?.message || ("HTTP " + res.status);
+      const err = new Error(msg);
+      err.status = res.status;
+      throw err;
+    }
+    return data;
   }
 
   function fmtTime(ts){
     if(!ts) return "—";
-    const d = new Date(ts);
-    const diff = Date.now() - d.getTime();
-    const mins = Math.floor(diff/60000);
-    if(mins < 1) return "agora";
-    if(mins < 60) return mins + " min";
-    const hrs = Math.floor(mins/60);
-    if(hrs < 24) return hrs + " h";
-    const days = Math.floor(hrs/24);
-    return days + " d";
+    const d=new Date(ts);
+    const diff=Date.now()-d.getTime();
+    const mins=Math.floor(diff/60000);
+    if(mins<1) return "agora";
+    if(mins<60) return mins+" min";
+    const hrs=Math.floor(mins/60);
+    if(hrs<24) return hrs+" h";
+    return Math.floor(hrs/24)+" d";
   }
+
   function tagHtml(status){
     if(status==="approved") return `<span class="tag approved">✅ aprovado</span>`;
     if(status==="rejected") return `<span class="tag rejected">❌ recusado</span>`;
     return `<span class="tag pending">⏳ pendente</span>`;
   }
 
-  async function api(path, opts={}){
-    const cfg = getCfg();
-    const base = (cfg.api || "").replace(/\/$/,"");
-    if(!base) throw new Error("Configure API_BASE");
-    const url = base + path;
-    const headers = Object.assign({
-      "Content-Type":"application/json",
-      "Authorization":"Bearer " + (cfg.key || "")
-    }, opts.headers || {});
-    const res = await fetch(url, Object.assign({}, opts, { headers }));
-    const data = await res.json().catch(()=> ({}));
-    if(!res.ok) throw new Error(data.error || ("HTTP "+res.status));
-    return data;
-  }
-
-  let cache = [];
-
-  function applyFilter(){
-    const q = $("q").value.trim().toLowerCase();
-    const st = $("status").value;
-
-    const rows = cache.filter(x=>{
-      const okStatus = (st==="all") ? true : (x.status===st);
-      if(!okStatus) return false;
-      if(!q) return true;
-      const hay = [x.discordTag, x.userId, x.nick, x.id].filter(Boolean).join(" ").toLowerCase();
-      return hay.includes(q);
-    });
-    render(rows);
-  }
+  let cache=[];
 
   function render(rows){
-    const tb = $("tbody");
-    tb.innerHTML = "";
+    const tb=$("tbody"); tb.innerHTML="";
     $("empty").style.display = rows.length ? "none" : "block";
-
     for(const item of rows){
-      const tr = document.createElement("tr");
-      const user = escapeHtml(item.discordTag || ("ID:"+ (item.userId||"—")));
+      const tr=document.createElement("tr");
+      const user = escapeHtml(item.discordTag || item.userId || "—");
       const nick = escapeHtml(item.nick || "—");
-      const idade = item.idade != null ? escapeHtml(item.idade) : "—";
+      const idade = item.idade!=null ? escapeHtml(item.idade) : "—";
       const when = fmtTime(item.createdAt || item.updatedAt);
-
-      const actions = `
-        <div class="rowBtns">
-          ${item.status==="pending" ? `
-            <button class="mini ok" data-act="approve" data-id="${escapeHtml(item.id)}">Aprovar</button>
-            <button class="mini danger" data-act="reject" data-id="${escapeHtml(item.id)}">Recusar</button>
-          ` : `
-            <button class="mini" data-act="pending" data-id="${escapeHtml(item.id)}">Voltar</button>
-          `}
-        </div>
-      `;
-
       tr.innerHTML = `
-        <td><b>${user}</b><div class="mono" style="color:var(--muted);font-size:11px;margin-top:4px">${escapeHtml(item.userId||"")}</div></td>
+        <td><b>${user}</b></td>
         <td>${nick}</td>
         <td>${idade}</td>
         <td>${tagHtml(item.status || "pending")}</td>
         <td>${escapeHtml(when)}</td>
-        <td style="text-align:right">${actions}</td>
+        <td style="text-align:right">
+          <div class="rowBtns">
+            ${item.status==="pending" ? `
+              <button class="mini ok" data-act="approve" data-id="${escapeHtml(item.id)}">Aprovar</button>
+              <button class="mini danger" data-act="reject" data-id="${escapeHtml(item.id)}">Recusar</button>
+            ` : `
+              <button class="mini" data-act="pending" data-id="${escapeHtml(item.id)}">Voltar</button>
+            `}
+          </div>
+        </td>
       `;
       tb.appendChild(tr);
     }
   }
 
+  function applyFilter(){
+    const q=$("q").value.trim().toLowerCase();
+    const st=$("status").value;
+    const rows = cache.filter(x=>{
+      const okStatus = (st==="all")?true:(x.status===st);
+      if(!okStatus) return false;
+      if(!q) return true;
+      const hay = [x.discordTag,x.userId,x.nick].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+    render(rows);
+  }
+
   async function load(){
     try{
       setStatus("carregando...", null);
-      const st = $("status").value;
+      const st=$("status").value;
       const data = await api(`/admin/submissions?status=${encodeURIComponent(st)}`);
-      cache = Array.isArray(data.items) ? data.items : [];
-      $("statPending").textContent  = data.stats?.pending ?? "—";
+      cache = Array.isArray(data.items)?data.items:[];
+      setStatus("online", true);
+
+      $("statPending").textContent = data.stats?.pending ?? "—";
       $("statApproved").textContent = data.stats?.approved24h ?? "—";
       $("statRejected").textContent = data.stats?.rejected24h ?? "—";
+      $("statGuild").textContent = data.meta?.guildId ?? "—";
 
-      const cfg = getCfg();
-      $("statApi").textContent = cfg.api || "—";
-
-      setStatus("online", true);
       applyFilter();
     }catch(e){
+      if(e.status===401){
+        // trava de novo
+        toast("Key inválida (401).", "err");
+        lockGate(true);
+        return;
+      }
       setStatus("offline", false);
-      cache = [];
+      toast(e.message || String(e), "err");
+      cache=[];
       render([]);
-      toast(e.message || e, "err");
     }
   }
 
   async function approve(id){
-    const reason = prompt("Motivo (opcional):") || "";
     try{
-      await api(`/admin/submissions/${encodeURIComponent(id)}/approve`, {
-        method:"POST",
-        body: JSON.stringify({ reason })
-      });
+      await api(`/admin/submissions/${encodeURIComponent(id)}/approve`, { method:"POST" });
       toast("Aprovado!", "ok");
-      await load();
-    }catch(e){ toast(e.message || e, "err"); }
+      load();
+    }catch(e){
+      if(e.status===401){ toast("Key inválida.", "err"); lockGate(true); return; }
+      toast(e.message||e,"err");
+    }
   }
-
   async function reject(id){
-    const reason = prompt("Motivo da recusa (obrigatório):") || "";
-    if(!reason.trim()) return toast("Recusa cancelada.", "info");
+    const reason = prompt("Motivo (opcional):") || "";
     try{
       await api(`/admin/submissions/${encodeURIComponent(id)}/reject`, {
         method:"POST",
         body: JSON.stringify({ reason })
       });
       toast("Recusado!", "ok");
-      await load();
-    }catch(e){ toast(e.message || e, "err"); }
+      load();
+    }catch(e){
+      if(e.status===401){ toast("Key inválida.", "err"); lockGate(true); return; }
+      toast(e.message||e,"err");
+    }
   }
-
-  async function pending(id){
+  async function setPending(id){
     try{
       await api(`/admin/submissions/${encodeURIComponent(id)}/pending`, { method:"POST" });
-      toast("Voltou para pendente.", "ok");
-      await load();
-    }catch(e){ toast(e.message || e, "err"); }
+      toast("Voltou pra pendente.", "ok");
+      load();
+    }catch(e){
+      if(e.status===401){ toast("Key inválida.", "err"); lockGate(true); return; }
+      toast(e.message||e,"err");
+    }
   }
 
+  // ====== gate ======
+  function lockGate(show){
+    $("gate").style.display = show ? "flex" : "none";
+    if(show){
+      setStatus("travado", false);
+      $("kvKey").textContent = "—";
+    }else{
+      setStatus("online", true);
+      const key = getKey();
+      $("kvKey").textContent = key ? (key.slice(0,4)+"..."+key.slice(-4)) : "—";
+    }
+  }
+
+  async function testKeyThenEnter(){
+    const key = $("keyInput").value.trim();
+    if(!key) return;
+    setKey(key);
+    try{
+      // se tua API tiver /admin/health usa ela, senão testa via /admin/submissions
+      await api("/admin/health");
+      $("gateErr").style.display="none";
+      lockGate(false);
+      toast("Login OK.", "ok");
+      load();
+    }catch(e){
+      if(e.status===404){
+        // fallback
+        try{
+          await api("/admin/submissions?status=pending");
+          $("gateErr").style.display="none";
+          lockGate(false);
+          toast("Login OK.", "ok");
+          load();
+          return;
+        }catch(e2){}
+      }
+      $("gateErr").style.display="block";
+      clearKey();
+    }
+  }
+
+  // events
+  $("btnEnter").addEventListener("click", testKeyThenEnter);
+  $("btnClear").addEventListener("click", ()=>{ $("keyInput").value=""; $("gateErr").style.display="none"; });
+  $("btnLogout").addEventListener("click", ()=>{
+    clearKey();
+    cache=[]; render([]);
+    lockGate(true);
+    toast("Saiu do painel.", "info");
+  });
+  $("btnTest").addEventListener("click", async ()=>{
+    try{
+      await api("/admin/health");
+      toast("API OK.", "ok");
+    }catch(e){
+      if(e.status===401){ toast("Key inválida (401).", "err"); lockGate(true); return; }
+      toast("Falha: "+(e.message||e), "err");
+    }
+  });
   $("btnRefresh").addEventListener("click", load);
   $("q").addEventListener("input", applyFilter);
   $("status").addEventListener("change", load);
@@ -395,51 +593,21 @@
     const btn = e.target.closest("button");
     if(!btn) return;
     const act = btn.getAttribute("data-act");
-    const id = btn.getAttribute("data-id");
-    if(!act || !id) return;
+    const id  = btn.getAttribute("data-id");
+    if(!act||!id) return;
     if(act==="approve") return approve(id);
     if(act==="reject") return reject(id);
-    if(act==="pending") return pending(id);
-  });
-
-  $("btnConfig").addEventListener("click", ()=>{
-    const cfg = getCfg();
-    $("cfgApi").value = cfg.api;
-    $("cfgKey").value = cfg.key;
-    toast("Config aberta. Preencha e salve.", "info");
-  });
-
-  $("btnSave").addEventListener("click", ()=>{
-    const api = $("cfgApi").value.trim().replace(/\/$/,"");
-    const key = $("cfgKey").value.trim();
-    if(!api) return toast("API_BASE vazio.", "err");
-    if(!key) return toast("ADMIN_API_KEY vazio.", "err");
-    setCfg(api, key);
-    toast("Salvo.", "ok");
-    load();
-  });
-
-  $("btnTest").addEventListener("click", async ()=>{
-    try{
-      const cfg = getCfg();
-      if(!cfg.api) return toast("Configure API_BASE.", "err");
-      const res = await fetch(cfg.api.replace(/\/$/,"") + "/health");
-      const data = await res.json().catch(()=> ({}));
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      toast("Health OK: " + (data.ok ? "ok" : "ok"), "ok");
-    }catch(e){ toast(e.message || e, "err"); }
+    if(act==="pending") return setPending(id);
   });
 
   // boot
   (function(){
-    const cfg = getCfg();
-    $("statApi").textContent = cfg.api || "—";
-    if(!cfg.api || !cfg.key){
-      setStatus("configurar", false);
-      $("cfgApi").value = cfg.api || "";
-      $("cfgKey").value = cfg.key || "";
-      toast("Clique em Config e coloque API_BASE + ADMIN_API_KEY.", "info");
-    } else {
+    $("kvApi").textContent = API_BASE;
+    const key = getKey();
+    if(!key){
+      lockGate(true);
+    }else{
+      lockGate(false);
       load();
     }
   })();
