@@ -1,1 +1,197 @@
-<h1>FORM OK</h1>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Formulário — PNP</title>
+  <style>
+    :root{
+      --bg:#07070b;--card:#10101a;--card2:#0c0c13;--line:rgba(255,255,255,.10);
+      --text:#f3f3ff;--muted:#b8b8d6;--red:#ff1a1a;--shadow:0 18px 60px rgba(0,0,0,.55);--radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1100px 600px at 15% -10%, rgba(255,26,26,.16), transparent 55%),
+        radial-gradient(900px 600px at 90% 0%, rgba(255,26,26,.10), transparent 60%),
+        var(--bg);
+      color:var(--text);padding:22px;
+      overflow-x:hidden;
+    }
+    .wrap{max-width:920px;margin:0 auto}
+    .hero{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+      background:linear-gradient(135deg, rgba(255,26,26,.26), rgba(255,26,26,.08));
+      border:1px solid rgba(255,26,26,.28);box-shadow:var(--shadow);font-size:22px;
+      animation: float 2.8s ease-in-out infinite;
+    }
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+    h1{font-size:22px;margin:0;letter-spacing:.3px}
+    .sub{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .pill{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px 12px;border-radius:999px;color:var(--muted);font-size:13px}
+    .pill b{color:var(--text)}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .cardTop{padding:16px 16px 0 16px}
+    .banner{margin-top:12px;background:linear-gradient(135deg, rgba(255,26,26,.18), rgba(255,26,26,.06));border:1px solid rgba(255,26,26,.22);border-radius:14px;padding:12px 12px;color:var(--muted);font-size:13px}
+    .banner b{color:var(--text)}
+    form{padding:16px}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media (min-width: 860px){ .grid{grid-template-columns:1.2fr .8fr} }
+    .field{background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px}
+    label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700;font-size:13px;margin-bottom:8px;color:#e9e9ff}
+    .hint{font-weight:500;color:var(--muted);font-size:12px}
+    input, textarea{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:var(--card2);color:var(--text);padding:12px 12px;outline:none;font-size:14px}
+    input:focus, textarea:focus{border-color: rgba(255,26,26,.48);box-shadow: 0 0 0 4px rgba(255,26,26,.10)}
+    textarea{min-height:120px;resize:vertical}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+    .btn{border:none;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer;background:var(--red);color:#101010;letter-spacing:.2px;min-width:210px;transition:transform .08s ease, filter .15s ease}
+    .btn:hover{filter:brightness(1.05)}
+    .btn:active{transform:translateY(1px)}
+    .btn2{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--text);min-width:auto;font-weight:800;padding:12px 14px;border-radius:14px}
+    .footerNote{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.45}
+    .alert{margin-top:12px;border-radius:14px;padding:12px 12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:var(--muted);display:none}
+    .alert.ok{border-color: rgba(124,252,144,.35); display:block;}
+    .alert.err{border-color: rgba(255,77,77,.35); display:block;}
+    .alert b{color:var(--text)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="brand">
+        <div class="logo">🦶</div>
+        <div>
+          <h1>Formulário do Bonde</h1>
+          <div class="sub">Seu @ aparece automático. Staff aprova no painel.</div>
+        </div>
+      </div>
+      <div class="pill">Usuário: <b id="who">carregando...</b></div>
+    </div>
+
+    <div class="card">
+      <div class="cardTop">
+        <div class="banner">
+          ✅ <b>Importante:</b> este link é único e não deve ser compartilhado.
+          Se você errar algo, peça <b>#form</b> de novo no Discord.
+        </div>
+      </div>
+
+      <form onsubmit="return submitForm(event)">
+        <div class="grid">
+          <div class="field">
+            <label>@ do Discord <span class="hint">automático</span></label>
+            <input id="discordTag" readonly />
+          </div>
+
+          <div class="field">
+            <label>Idade <span class="hint">mín 5 / máx 120</span></label>
+            <input id="idade" type="number" min="5" max="120" placeholder="Ex: 16" required />
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Nick <span class="hint">seu nick no jogo</span></label>
+            <input id="nick" maxlength="64" placeholder="Ex: Arroz_macio" required />
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Por que quer se juntar ao bonde <span class="hint">seja direto</span></label>
+            <textarea id="motivo" maxlength="700" placeholder="Explique por que você quer entrar..." required></textarea>
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Link do bonde <span class="hint">não altere se já estiver certo</span></label>
+            <input id="linkBonde" value="https://www.roblox.com/share/g/1003923644" required />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="submit">Enviar Formulário</button>
+          <button class="btn2" type="button" onclick="fillExample()">Preencher exemplo</button>
+        </div>
+
+        <div id="alertOk" class="alert ok">✅ <b>Ok!</b> Enviado. Aguarde aprovação no painel.</div>
+        <div id="alertErr" class="alert err">❌ <b>Erro:</b> <span id="errText">Verifique os campos.</span></div>
+
+        <div class="footerNote">
+          Ao enviar, o staff receberá sua inscrição no painel. Após aprovação, o bot dará o cargo automaticamente.
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const token = (params.get("token") || "").trim();
+  const API_BASE = (params.get("api") || "https://pnp-api.shardweb.app").replace(/\/$/,"");
+
+  function showErr(msg){
+    document.getElementById("errText").textContent = msg;
+    document.getElementById("alertErr").style.display = "block";
+    document.getElementById("alertOk").style.display = "none";
+  }
+  function showOk(){
+    document.getElementById("alertOk").style.display = "block";
+    document.getElementById("alertErr").style.display = "none";
+  }
+
+  async function loadWho(){
+    if(!token){
+      document.getElementById("who").textContent = "sem token";
+      document.getElementById("discordTag").value = "";
+      return;
+    }
+    try{
+      const res = await fetch(API_BASE + "/api/form/token/" + encodeURIComponent(token));
+      const data = await res.json().catch(()=> ({}));
+      if(!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+      document.getElementById("who").textContent = data.discordTag || ("ID:" + (data.userId||"—"));
+      document.getElementById("discordTag").value = data.discordTag || "";
+    }catch(e){
+      document.getElementById("who").textContent = "token inválido";
+      showErr(e.message || "Token inválido. Peça #form de novo.");
+    }
+  }
+
+  async function submitForm(ev){
+    ev.preventDefault();
+
+    const idade = Number(document.getElementById("idade").value);
+    const nick = document.getElementById("nick").value.trim();
+    const motivo = document.getElementById("motivo").value.trim();
+    const link = document.getElementById("linkBonde").value.trim();
+
+    if (!token) return showErr("Token ausente. Peça #form de novo."), false;
+    if (!nick) return showErr("Preencha o Nick."), false;
+    if (!motivo || motivo.length < 10) return showErr("Explique melhor (mínimo 10 caracteres)."), false;
+    if (!Number.isFinite(idade) || idade < 5 || idade > 120) return showErr("Idade inválida."), false;
+    if (!/^https?:\/\//i.test(link)) return showErr("Link do bonde inválido."), false;
+
+    try{
+      const res = await fetch(API_BASE + "/api/form/submit", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ token, idade, nick, motivo, linkBonde: link })
+      });
+      const data = await res.json().catch(()=> ({}));
+      if(!res.ok) throw new Error(data.error || ("HTTP "+res.status));
+      showOk();
+      return false;
+    }catch(e){
+      showErr(e.message || "Falha ao enviar.");
+      return false;
+    }
+  }
+
+  function fillExample(){
+    document.getElementById("idade").value = "16";
+    document.getElementById("nick").value = "Arroz_macio";
+    document.getElementById("motivo").value = "Quero me juntar porque curto o bonde, sou ativo e quero evoluir com a galera.";
+  }
+
+  loadWho();
+</script>
+</body>
+</html>
