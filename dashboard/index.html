@@ -3,627 +3,220 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Painel ADM — PNP</title>
-  <meta name="theme-color" content="#0b0b10"/>
-
+  <title>PNP Dashboard</title>
   <style>
     :root{
-      --bg:#07070b;
-      --card:#0d0d14;
-      --card2:#0a0a10;
-      --line:rgba(255,255,255,.10);
-      --text:#f4f4ff;
-      --muted:#b6b6d6;
-      --red:#ff1a1a;
-      --red2:#b80f0f;
-      --ok:#28f08a;
-      --warn:#ffcc66;
-      --shadow:0 18px 60px rgba(0,0,0,.55);
-      --r:18px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --bg:#07070b;--card:#10101a;--card2:#0c0c13;--line:rgba(255,255,255,.10);
+      --text:#f3f3ff;--muted:#b8b8d6;--red:#ff1a1a;--green:#5CFF9A;--shadow:0 18px 60px rgba(0,0,0,.55);--radius:18px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:
-        radial-gradient(1100px 600px at 15% -10%, rgba(255,26,26,.18), transparent 55%),
+        radial-gradient(1100px 600px at 15% -10%, rgba(255,26,26,.16), transparent 55%),
         radial-gradient(900px 600px at 90% 0%, rgba(255,26,26,.10), transparent 60%),
         var(--bg);
-      color:var(--text);
+      color:var(--text);padding:22px;
     }
-    .wrap{max-width:1150px;margin:0 auto;padding:18px}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-      padding:14px 14px;border:1px solid rgba(255,255,255,.08);
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border-radius:22px;box-shadow:var(--shadow);
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:46px;height:46px;border-radius:16px;display:grid;place-items:center;
-      background:linear-gradient(135deg, rgba(255,26,26,.30), rgba(255,26,26,.08));
-      border:1px solid rgba(255,26,26,.28);
-      box-shadow:0 12px 40px rgba(0,0,0,.45);
-      font-size:22px;
-    }
-    .title{line-height:1.1}
-    .title h1{margin:0;font-size:18px;letter-spacing:.3px}
-    .title .sub{margin-top:4px;color:var(--muted);font-size:12px}
-    .right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-    .pill{
-      display:inline-flex;align-items:center;gap:10px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      padding:10px 12px;border-radius:999px;color:var(--muted);font-size:13px
-    }
-    .dot{width:10px;height:10px;border-radius:50%}
-    .dot.off{background:#666}
-    .dot.on{background:var(--ok);box-shadow:0 0 0 4px rgba(40,240,138,.12)}
-    .btn{
-      border:none;border-radius:14px;padding:10px 12px;font-weight:900;cursor:pointer;
-      background:var(--red);color:#120a0a;letter-spacing:.2px;transition:transform .08s ease, filter .15s ease;
-    }
-    .btn:hover{filter:brightness(1.06)}
-    .btn:active{transform:translateY(1px)}
-    .btn.ghost{
-      background:transparent;color:var(--text);
-      border:1px solid rgba(255,255,255,.14);
-    }
-    .btn.small{padding:8px 10px;border-radius:12px;font-weight:900}
-    .btn.ok{background:linear-gradient(180deg, rgba(40,240,138,.95), rgba(40,240,138,.78));}
-    .btn.bad{background:linear-gradient(180deg, rgba(255,90,90,.95), rgba(255,90,90,.78));}
-
-    .grid{
-      display:grid;gap:14px;margin-top:14px;
-      grid-template-columns: 1fr;
-    }
-    @media(min-width: 980px){
-      .grid{grid-template-columns: 0.8fr 1.2fr;}
-    }
-
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:var(--r);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .cardHead{
-      padding:14px 14px 10px 14px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .cardHead h2{margin:0;font-size:14px;letter-spacing:.2px}
-    .cardHead .hint{color:var(--muted);font-size:12px}
-    .cardBody{padding:14px}
-
-    .kv{display:grid;grid-template-columns: 1fr; gap:10px}
-    .kv .row{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:12px;border-radius:14px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .kv .row b{font-size:12px;color:var(--muted);font-weight:800}
-    .kv .row span{
-      font-family:var(--mono);
-      font-size:12px;color:var(--text);
-      opacity:.95;
-      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-      max-width: 65%;
-      text-align:right;
-    }
-
-    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .input{
-      flex:1;min-width:220px;
-      border-radius:14px;border:1px solid rgba(255,255,255,.10);
-      background:var(--card2);color:var(--text);
-      padding:10px 12px;outline:none;font-size:14px
-    }
-    .input:focus{border-color: rgba(255,26,26,.48);box-shadow: 0 0 0 4px rgba(255,26,26,.10)}
-    select.input{min-width:160px;cursor:pointer}
-
-    .tableWrap{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08)}
-    table{width:100%;border-collapse:collapse;min-width:820px;background:rgba(0,0,0,.25)}
-    th,td{padding:12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:13px}
-    th{color:#e9e9ff;font-size:12px;text-transform:uppercase;letter-spacing:.12em;background:rgba(255,255,255,.03)}
-    td{color:rgba(244,244,255,.92)}
-    .tag{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-    }
-    .tag.pending{border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.08); color:#ffd28a;}
-    .tag.approved{border-color: rgba(40,240,138,.35); background: rgba(40,240,138,.08); color:#7cffb6;}
-    .tag.rejected{border-color: rgba(255,90,90,.35); background: rgba(255,90,90,.08); color:#ff9a9a;}
-    .muted{color:var(--muted);font-size:12px}
-    .motivo{
-      max-width:380px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .actionsCell{display:flex;gap:8px;align-items:center}
-    .toast{
-      position:fixed;right:14px;bottom:14px;
-      background:rgba(10,10,16,.92);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:16px;
-      padding:12px 14px;
-      box-shadow:var(--shadow);
-      max-width: 92vw;
-      display:none;
-    }
-    .toast.show{display:block}
-    .toast .t{font-weight:900}
-    .toast.ok{border-color: rgba(40,240,138,.35)}
-    .toast.err{border-color: rgba(255,90,90,.35)}
-    .divider{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
-    .loginWrap{
-      max-width:520px;margin:40px auto;padding:18px;
-    }
-    .loginCard{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:24px;box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .loginTop{
-      padding:18px;border-bottom:1px solid rgba(255,255,255,.06);
-      display:flex;align-items:center;gap:12px
-    }
-    .loginTop h2{margin:0;font-size:16px}
-    .loginTop p{margin:2px 0 0;color:var(--muted);font-size:12px}
-    .loginBody{padding:18px}
-    .loginBody label{display:block;font-size:12px;color:var(--muted);font-weight:900;margin:0 0 8px}
-    .loginBody .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .dangerNote{
-      margin-top:12px;
-      background:linear-gradient(135deg, rgba(255,26,26,.18), rgba(255,26,26,.06));
-      border:1px solid rgba(255,26,26,.22);
-      border-radius:16px;padding:12px;color:var(--muted);font-size:12px;line-height:1.45
-    }
-    .dangerNote b{color:var(--text)}
-    .foot{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
-    code{font-family:var(--mono)}
+    .wrap{max-width:1100px;margin:0 auto}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .title{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg, rgba(255,26,26,.26), rgba(255,26,26,.08));border:1px solid rgba(255,26,26,.28);box-shadow:var(--shadow);font-size:22px}
+    h1{margin:0;font-size:20px}
+    .sub{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    input,select,button{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:var(--card2);color:var(--text);padding:12px 12px;font-size:14px;outline:none}
+    button{cursor:pointer;font-weight:900}
+    .btnRed{background:var(--red);color:#111;border:none}
+    .btnGreen{background:var(--green);color:#111;border:none}
+    .btnGhost{background:transparent}
+    .pill{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:10px 12px;border-radius:999px;color:var(--muted);font-size:13px}
+    .pill b{color:var(--text)}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}
+    @media(min-width:980px){.grid{grid-template-columns:1fr 1fr}}
+    .item{padding:14px;border-top:1px solid rgba(255,255,255,.08)}
+    .meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:6px}
+    .name{display:flex;align-items:center;gap:10px}
+    .tag{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);font-size:12px;color:var(--muted)}
+    .motivo{margin-top:10px;color:#e9e9ff;white-space:pre-wrap}
+    .actions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+    .hidden{display:none}
+    .alert{padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);color:var(--muted)}
+    a{color:#fff}
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo">🦶</div>
-        <div class="title">
-          <h1>Painel ADM — PNP</h1>
-          <div class="sub">Login por <b>ADMIN_API_KEY</b> • aprova/recusa • logs via webhook (API)</div>
-        </div>
-      </div>
-
-      <div class="right">
-        <div class="pill">
-          <span class="dot off" id="statusDot"></span>
-          <span>Status: <b id="statusTxt">offline</b></span>
-        </div>
-        <button class="btn ghost" id="btnTest">Testar API</button>
-        <button class="btn ghost" id="btnRefresh">Atualizar</button>
-        <button class="btn" id="btnLogout">Sair</button>
+<div class="wrap">
+  <div class="top">
+    <div class="title">
+      <div class="logo">🦶</div>
+      <div>
+        <h1>PNP Dashboard</h1>
+        <div class="sub">Login por chave • Aprova no painel • Bot dá o cargo via webhook</div>
       </div>
     </div>
 
-    <!-- LOGIN -->
-    <div id="loginView" class="loginWrap" style="display:none">
-      <div class="loginCard">
-        <div class="loginTop">
-          <div class="logo" style="width:44px;height:44px;border-radius:16px">🔐</div>
-          <div>
-            <h2>Entrar no Painel</h2>
-            <p>Digite sua <b>ADMIN_API_KEY</b> para liberar o dashboard.</p>
-          </div>
-        </div>
-
-        <div class="loginBody">
-          <label>ADMIN_API_KEY</label>
-          <div class="row">
-            <input id="keyInput" class="input" placeholder="Cole sua ADMIN_API_KEY aqui..." autocomplete="off" />
-            <button class="btn" id="btnLogin">Entrar</button>
-          </div>
-
-          <div class="dangerNote">
-            ✅ A chave fica salva só no seu navegador (<code>localStorage</code>).<br/>
-            ⚠️ Se der <b>401</b>, a chave está errada.<br/>
-            💡 Se der <b>0 itens</b>, pode não ter pendentes.
-          </div>
-
-          <div class="foot">
-            Base da API: <code id="apiBaseLabel"></code>
-          </div>
-        </div>
-      </div>
+    <div class="row">
+      <span class="pill">API: <b id="apiShow">—</b></span>
+      <button class="btnGhost" onclick="logout()">Sair</button>
     </div>
-
-    <!-- DASHBOARD -->
-    <div id="dashView" style="display:none">
-      <div class="grid">
-
-        <!-- RESUMO -->
-        <div class="card">
-          <div class="cardHead">
-            <div>
-              <h2>📌 Resumo</h2>
-              <div class="hint">contagens rápidas</div>
-            </div>
-          </div>
-          <div class="cardBody">
-            <div class="kv">
-              <div class="row"><b>Pendentes</b><span id="kPend">—</span></div>
-              <div class="row"><b>Aprovados (24h)</b><span id="kAppr">—</span></div>
-              <div class="row"><b>Recusados (24h)</b><span id="kRej">—</span></div>
-              <div class="row"><b>Última atualização</b><span id="kUpd">—</span></div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="kv">
-              <div class="row"><b>API Base</b><span id="kApi">—</span></div>
-              <div class="row"><b>Key</b><span id="kKey">—</span></div>
-            </div>
-
-            <div class="foot" style="margin-top:12px">
-              Dica: se “Testar API” der <b>NOT_FOUND</b>, sua API não tem a rota esperada ou a base está errada.
-            </div>
-          </div>
-        </div>
-
-        <!-- LISTA -->
-        <div class="card">
-          <div class="cardHead">
-            <div>
-              <h2>🧾 Formulários</h2>
-              <div class="hint">filtra e aprova/recusa</div>
-            </div>
-
-            <div class="controls">
-              <input id="search" class="input" placeholder="Pesquisar (nick, discord...)" />
-              <select id="filter" class="input">
-                <option value="all">Todos</option>
-                <option value="pending" selected>Pendentes</option>
-                <option value="approved">Aprovados</option>
-                <option value="rejected">Recusados</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="cardBody">
-            <div class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Discord</th>
-                    <th>Nick</th>
-                    <th>Idade</th>
-                    <th>Status</th>
-                    <th>Quando</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody">
-                  <tr><td colspan="6" class="muted">Carregando...</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="foot" style="margin-top:10px">
-              Aprovar/Recusar aqui só muda o status na API e dispara o webhook de log (se configurado na API).
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 
-  <div id="toast" class="toast">
-    <div class="t" id="toastTitle">—</div>
-    <div class="muted" id="toastMsg">—</div>
+  <div class="card" id="loginCard">
+    <div style="padding:14px">
+      <div class="row">
+        <input id="apiBase" placeholder="API Base (ex: https://pnp-api.shardweb.app)" style="min-width:320px" />
+        <input id="key" placeholder="ADMIN_API_KEY" style="min-width:320px" />
+        <button class="btnRed" onclick="saveLogin()">Entrar</button>
+      </div>
+      <div class="alert">Dica: A chave fica salva só no seu navegador (localStorage).</div>
+    </div>
   </div>
+
+  <div class="card hidden" id="dashCard">
+    <div style="padding:14px" class="row">
+      <select id="filter" onchange="render()">
+        <option value="pending">Pendentes</option>
+        <option value="approved">Aprovados</option>
+        <option value="rejected">Recusados</option>
+        <option value="all">Tudo</option>
+      </select>
+      <button onclick="load()" class="btnGhost">Atualizar</button>
+      <span class="pill">Total: <b id="total">0</b></span>
+    </div>
+    <div id="list"></div>
+    <div class="alert" id="status">—</div>
+  </div>
+</div>
 
 <script>
-  // ====== CONFIG ======
-  // Troque isso se precisar:
-  const API_BASE = "https://pnp-api.shardweb.app"; // <-- sua base final
-  // ====================
+  let submissions = [];
 
-  const els = {
-    loginView: document.getElementById("loginView"),
-    dashView: document.getElementById("dashView"),
-    keyInput: document.getElementById("keyInput"),
-    btnLogin: document.getElementById("btnLogin"),
-    btnLogout: document.getElementById("btnLogout"),
-    btnRefresh: document.getElementById("btnRefresh"),
-    btnTest: document.getElementById("btnTest"),
+  function getApi(){ return (localStorage.getItem("PNP_API_BASE") || "").replace(/\/+$/,""); }
+  function getKey(){ return (localStorage.getItem("PNP_ADMIN_KEY") || "").trim(); }
 
-    statusDot: document.getElementById("statusDot"),
-    statusTxt: document.getElementById("statusTxt"),
-
-    kPend: document.getElementById("kPend"),
-    kAppr: document.getElementById("kAppr"),
-    kRej: document.getElementById("kRej"),
-    kUpd: document.getElementById("kUpd"),
-    kApi: document.getElementById("kApi"),
-    kKey: document.getElementById("kKey"),
-
-    apiBaseLabel: document.getElementById("apiBaseLabel"),
-
-    search: document.getElementById("search"),
-    filter: document.getElementById("filter"),
-    tbody: document.getElementById("tbody"),
-
-    toast: document.getElementById("toast"),
-    toastTitle: document.getElementById("toastTitle"),
-    toastMsg: document.getElementById("toastMsg"),
-  };
-
-  els.apiBaseLabel.textContent = API_BASE;
-
-  let ADMIN_KEY = localStorage.getItem("PNP_ADMIN_KEY") || "";
-  let ALL = [];
-
-  function maskKey(k){
-    if(!k) return "—";
-    if(k.length <= 10) return k;
-    return k.slice(0, 6) + "..." + k.slice(-4);
+  function saveLogin(){
+    const api = document.getElementById("apiBase").value.trim().replace(/\/+$/,"");
+    const key = document.getElementById("key").value.trim();
+    if(!api) return alert("Coloca a API Base");
+    if(!key) return alert("Coloca a ADMIN_API_KEY");
+    localStorage.setItem("PNP_API_BASE", api);
+    localStorage.setItem("PNP_ADMIN_KEY", key);
+    boot();
   }
 
-  function toast(type, title, msg){
-    els.toast.className = "toast show " + (type === "ok" ? "ok" : "err");
-    els.toastTitle.textContent = title;
-    els.toastMsg.textContent = msg || "";
-    setTimeout(()=>{ els.toast.className = "toast"; }, 3200);
+  function logout(){
+    localStorage.removeItem("PNP_API_BASE");
+    localStorage.removeItem("PNP_ADMIN_KEY");
+    location.reload();
   }
 
-  function setStatus(on){
-    els.statusDot.className = "dot " + (on ? "on" : "off");
-    els.statusTxt.textContent = on ? "online" : "offline";
-  }
-
-  function authHeaders(){
-    return { "Authorization": "Bearer " + ADMIN_KEY };
-  }
-
-  async function apiFetch(path, opts={}){
-    const url = API_BASE.replace(/\/+$/,"") + path;
-    const res = await fetch(url, opts);
-    const ct = res.headers.get("content-type") || "";
-    const data = ct.includes("application/json")
-      ? await res.json().catch(()=> ({}))
-      : await res.text().catch(()=> "");
-    if(!res.ok){
-      const msg = (data && data.error) ? data.error : (typeof data === "string" ? data : ("HTTP " + res.status));
-      throw new Error(msg);
-    }
+  async function api(path, opts={}){
+    const base = getApi();
+    const key = getKey();
+    const r = await fetch(base + path, {
+      ...opts,
+      headers: {
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + key,
+        ...(opts.headers || {})
+      }
+    });
+    const data = await r.json().catch(()=> ({}));
+    if(!r.ok) throw new Error(data.error || ("HTTP "+r.status));
     return data;
   }
 
-  function showLogin(){
-    els.loginView.style.display = "";
-    els.dashView.style.display = "none";
-    els.keyInput.value = ADMIN_KEY || "";
-    els.kApi.textContent = API_BASE;
-    els.kKey.textContent = maskKey(ADMIN_KEY);
-  }
-  function showDash(){
-    els.loginView.style.display = "none";
-    els.dashView.style.display = "";
-    els.kApi.textContent = API_BASE;
-    els.kKey.textContent = maskKey(ADMIN_KEY);
-  }
-
-  function within24h(iso){
+  async function load(){
     try{
-      const t = new Date(iso).getTime();
-      return (Date.now() - t) <= 24*60*60*1000;
-    }catch{ return false; }
-  }
-
-  function fmtWhen(iso){
-    try{
-      const d = new Date(iso);
-      const pad = (n)=> String(n).padStart(2,"0");
-      return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinutes());
-    }catch{ return "—"; }
+      setStatus("Carregando...");
+      submissions = await api("/admin/submissions");
+      document.getElementById("total").textContent = submissions.length;
+      render();
+      setStatus("✅ Atualizado");
+    }catch(e){
+      setStatus("❌ " + (e.message || e));
+    }
   }
 
   function render(){
-    const q = (els.search.value || "").trim().toLowerCase();
-    const f = els.filter.value;
+    const f = document.getElementById("filter").value;
+    const list = document.getElementById("list");
+    list.innerHTML = "";
 
-    let rows = ALL.slice();
+    const items = submissions.filter(s => {
+      if(f==="all") return true;
+      return (s.status || "pending") === f;
+    });
 
-    if(f !== "all") rows = rows.filter(x => (x.status || "pending") === f);
-
-    if(q){
-      rows = rows.filter(x =>
-        String(x.nick||"").toLowerCase().includes(q) ||
-        String(x.discordTag||"").toLowerCase().includes(q) ||
-        String(x.id||"").toLowerCase().includes(q)
-      );
-    }
-
-    if(!rows.length){
-      els.tbody.innerHTML = `<tr><td colspan="6" class="muted">Nada aqui (ou falta permissão).</td></tr>`;
-      return;
-    }
-
-    els.tbody.innerHTML = rows.map(item => {
-      const st = item.status || "pending";
-      const tagCls = st === "approved" ? "approved" : (st === "rejected" ? "rejected" : "pending");
-      const tagLabel = st === "approved" ? "Aprovado" : (st === "rejected" ? "Recusado" : "Pendente");
-
-      const canAct = (st === "pending");
-      const approveBtn = canAct ? `<button class="btn small ok" data-act="approve" data-id="${item.id}">Aprovar</button>` : "";
-      const rejectBtn  = canAct ? `<button class="btn small bad" data-act="reject" data-id="${item.id}">Recusar</button>` : "";
-      const viewBtn = `<button class="btn small ghost" data-act="view" data-id="${item.id}">Ver</button>`;
-
-      return `
-        <tr>
-          <td>${escapeHtml(item.discordTag || "—")}</td>
-          <td>${escapeHtml(item.nick || "—")}</td>
-          <td>${escapeHtml(String(item.idade ?? "—"))}</td>
-          <td><span class="tag ${tagCls}">${tagLabel}</span></td>
-          <td title="${escapeHtml(item.createdAt || "")}">${escapeHtml(fmtWhen(item.createdAt))}</td>
-          <td>
-            <div class="actionsCell">
-              ${approveBtn}
-              ${rejectBtn}
-              ${viewBtn}
-            </div>
-          </td>
-        </tr>
+    items.forEach(s => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div class="name">
+          <b>${escapeHtml(s.nick || "-")}</b>
+          <span class="tag">${escapeHtml(s.status || "pending")}</span>
+          <span class="tag">${escapeHtml(s.discordTag || s.userId || "-")}</span>
+        </div>
+        <div class="meta">
+          <span>Idade: <b>${escapeHtml(String(s.idade||"-"))}</b></span>
+          <span>Link: <a href="${escapeAttr(s.linkBonde||"#")}" target="_blank">${escapeHtml(s.linkBonde||"-")}</a></span>
+          <span>ID: <b>${escapeHtml(s.id||"-")}</b></span>
+        </div>
+        <div class="motivo">${escapeHtml(s.motivo || "-")}</div>
+        <div class="actions">
+          <button class="btnGreen" ${s.status==="approved"?"disabled":""} onclick="approve('${s.id}')">Aprovar</button>
+          <button class="btnRed" ${s.status==="rejected"?"disabled":""} onclick="reject('${s.id}')">Recusar</button>
+        </div>
       `;
-    }).join("");
+      list.appendChild(div);
+    });
   }
+
+  async function approve(id){
+    if(!confirm("Aprovar e dar cargo?")) return;
+    try{
+      setStatus("Aprovando...");
+      await api(`/admin/submissions/${id}/approve`, { method:"POST" });
+      await load();
+    }catch(e){ setStatus("❌ " + (e.message || e)); }
+  }
+
+  async function reject(id){
+    if(!confirm("Recusar?")) return;
+    try{
+      setStatus("Recusando...");
+      await api(`/admin/submissions/${id}/reject`, { method:"POST" });
+      await load();
+    }catch(e){ setStatus("❌ " + (e.message || e)); }
+  }
+
+  function setStatus(t){ document.getElementById("status").textContent = t; }
 
   function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+  function escapeAttr(s){
+    return String(s).replace(/"/g,'&quot;');
   }
 
-  function updateSummary(){
-    const pend = ALL.filter(x => (x.status||"pending")==="pending").length;
-    const appr = ALL.filter(x => (x.status||"pending")==="approved" && within24h(x.approvedAt||x.createdAt)).length;
-    const rej  = ALL.filter(x => (x.status||"pending")==="rejected" && within24h(x.rejectedAt||x.createdAt)).length;
+  function boot(){
+    const api = getApi();
+    const key = getKey();
+    document.getElementById("apiShow").textContent = api || "—";
 
-    els.kPend.textContent = String(pend);
-    els.kAppr.textContent = String(appr);
-    els.kRej.textContent  = String(rej);
-    els.kUpd.textContent  = new Date().toLocaleString();
+    document.getElementById("apiBase").value = api || "https://pnp-api.shardweb.app";
+    document.getElementById("key").value = key || "";
+
+    const logged = !!api && !!key;
+    document.getElementById("loginCard").classList.toggle("hidden", logged);
+    document.getElementById("dashCard").classList.toggle("hidden", !logged);
+
+    if(logged) load();
   }
 
-  async function refresh(){
-    try{
-      if(!ADMIN_KEY) return showLogin();
-
-      // testa API pra status
-      await apiFetch("/health");
-      setStatus(true);
-
-      const list = await apiFetch("/admin/submissions", { headers: authHeaders() });
-      ALL = Array.isArray(list) ? list : (list.submissions || []);
-      updateSummary();
-      render();
-    }catch(e){
-      setStatus(false);
-      if(String(e.message||"").toLowerCase().includes("unauthorized")){
-        toast("err","401: Key inválida","Sua ADMIN_API_KEY está errada. Cole de novo.");
-        localStorage.removeItem("PNP_ADMIN_KEY");
-        ADMIN_KEY = "";
-        showLogin();
-      }else{
-        toast("err","Falha ao carregar", e.message || "Erro");
-      }
-    }
-  }
-
-  async function doApprove(id){
-    try{
-      await apiFetch(`/admin/submissions/${encodeURIComponent(id)}/approve`, {
-        method:"POST",
-        headers: { ...authHeaders(), "Content-Type":"application/json" },
-        body: "{}"
-      });
-      toast("ok","Aprovado","OK.");
-      await refresh();
-    }catch(e){
-      toast("err","Erro ao aprovar", e.message || "Falha");
-    }
-  }
-
-  async function doReject(id){
-    try{
-      await apiFetch(`/admin/submissions/${encodeURIComponent(id)}/reject`, {
-        method:"POST",
-        headers: { ...authHeaders(), "Content-Type":"application/json" },
-        body: "{}"
-      });
-      toast("ok","Recusado","OK.");
-      await refresh();
-    }catch(e){
-      toast("err","Erro ao recusar", e.message || "Falha");
-    }
-  }
-
-  function showDetails(id){
-    const item = ALL.find(x => String(x.id) === String(id));
-    if(!item) return toast("err","Não achei","ID não encontrado.");
-    const msg =
-      `Discord: ${item.discordTag || "—"}\n` +
-      `Nick: ${item.nick || "—"}\n` +
-      `Idade: ${item.idade ?? "—"}\n` +
-      `Status: ${item.status || "pending"}\n` +
-      `Criado: ${item.createdAt || "—"}\n\n` +
-      `Motivo:\n${item.motivo || "—"}`;
-    alert(msg);
-  }
-
-  // ====== EVENTS ======
-  els.btnLogin.onclick = async () => {
-    const k = (els.keyInput.value || "").trim();
-    if(!k) return toast("err","Faltou key","Cole a ADMIN_API_KEY.");
-    ADMIN_KEY = k;
-    localStorage.setItem("PNP_ADMIN_KEY", ADMIN_KEY);
-    showDash();
-    await refresh();
-  };
-
-  els.btnLogout.onclick = () => {
-    localStorage.removeItem("PNP_ADMIN_KEY");
-    ADMIN_KEY = "";
-    setStatus(false);
-    showLogin();
-    toast("ok","Saiu","Login removido.");
-  };
-
-  els.btnRefresh.onclick = refresh;
-
-  els.btnTest.onclick = async () => {
-    try{
-      await apiFetch("/health");
-      setStatus(true);
-      toast("ok","API OK","/health respondeu.");
-    }catch(e){
-      setStatus(false);
-      toast("err","Falha na API", e.message || "Erro");
-    }
-  };
-
-  els.search.oninput = render;
-  els.filter.onchange = render;
-
-  els.tbody.addEventListener("click", (ev)=>{
-    const btn = ev.target.closest("button");
-    if(!btn) return;
-    const act = btn.getAttribute("data-act");
-    const id = btn.getAttribute("data-id");
-    if(act === "approve") doApprove(id);
-    if(act === "reject") doReject(id);
-    if(act === "view") showDetails(id);
-  });
-
-  // ====== INIT ======
-  (function init(){
-    if(ADMIN_KEY){
-      showDash();
-      refresh();
-    }else{
-      showLogin();
-    }
-  })();
+  boot();
 </script>
 </body>
 </html>
